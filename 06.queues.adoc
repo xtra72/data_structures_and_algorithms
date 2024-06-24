@@ -1,0 +1,367 @@
+= Queue(큐)
+
+* 먼저 들어온 것이 먼저 나가는 선입선출(FIFO)을 구현한 컬렉션
+* 접근 가능한 유일한 객체가 삽입된 첫 번째 객체
+* 예
+** 대기 줄
+
+== 큐의 연산
+
+* add - 큐에 요소 추가
+* element - 큐의 맨 앞 요소 참조
+* remove - 큐의 맨 앞 요소 제거
+
+image::./images/queue.svg[align=center]
+
+== 간단한 Queue Interface
+
+* 큐의 기본 연산으로만 정의
+
+[source,java]
+----
+public interface Queue {
+        public void add(int element);
+        public int element();
+        public int remove();
+}
+----
+
+== 배열을 이용한 큐 구현
+
+* 큐에 입력되는 요소들을 배열을 이용해 관리
+** 인덱스를 이용한 접근으로 빠르고 간편
+* 초기 배열 크기 지정
+** 배열이 고정될 경우, 배열 크기 내에서만 사용 가능
+
+=== 예제 6.1. 배열을 이용해 ArrayQueue를 작성하고, 테스트하세요.
+
+* 큐내의 요소 관리를 위한 자료 구조로 배열 사용
+* toString()을 이용해 큐 출력
+
+[source,java]
+----
+
+public class ArrayQueue implements Queue {
+    int[] array;
+    int head;
+    int tail;
+
+
+    public ArrayQueue(int size) {
+        //...
+    }
+
+    @Override
+    public void add(int element) {
+        //...
+    }
+
+    @Override
+    public int element() {
+        //...
+    }
+
+    @Override
+    public int remove() {
+        //...
+    }
+
+    @Override
+    public String toString() {
+        //...
+    }
+
+    public static void main(String[] args) {
+        Queue queue = new ArrayQueue(5);
+
+        System.out.println("queue : " + queue);
+        queue.add(1);
+        System.out.println("queue : " + queue);
+        queue.add(2);
+        System.out.println("queue : " + queue);
+        queue.add(3);
+        System.out.println("queue : " + queue);
+        queue.add(4);
+        System.out.println("queue : " + queue);
+        queue.add(5);
+        System.out.println("queue : " + queue);
+        queue.remove();
+        System.out.println("queue : " + queue);
+        queue.remove();
+        System.out.println("queue : " + queue);
+        queue.remove();
+        System.out.println("queue : " + queue);
+        queue.remove();
+        System.out.println("queue : " + queue);
+        queue.remove();
+        System.out.println("queue : " + queue);
+    }
+}
+----
+
+결과는 다음과 같다.
+
+[source,console]
+----
+queue : []
+queue : [ 1]
+queue : [ 1,  2]
+queue : [ 1,  2,  3]
+queue : [ 1,  2,  3,  4]
+queue : [ 1,  2,  3,  4,  5]
+queue : [ 2,  3,  4,  5]
+queue : [ 3,  4,  5]
+queue : [ 4,  5]
+queue : [ 5]
+queue : []
+----
+
+=== 문제 6.1. 앞에서 작성한 ArrayQueue를 이용해 요청되는 추가 기능을 작성하고, 테스트하세요.
+
+* 큐에서 가지고 있는 요소 수를 알 수 있는 size()
+* 큐가 비워져 있는 확인 가능한 isEmpty()
+* 큐에 설정된 배열이 다 찼을 경우,
+** 배열의 크기 변경
+
+[source,java]
+----
+public class ArrayQueue2 implements Queue {
+    int[] array;
+    int head;
+    int tail;
+
+    public ArrayQueue2(int size) {
+        //...
+    }
+
+    public int size() {
+        //...
+    }
+
+    public boolean isEmpty() {
+        //...
+    }
+
+    @Override
+    public void add(int element) {
+        //...
+    }
+
+    @Override
+    public int element() {
+        //...
+    }
+
+    @Override
+    public int remove() {
+        //...
+    }
+
+    @Override
+    public String toString() {
+        //...
+    }
+
+    public static void main(String[] args) {
+        Queue queue = new ArrayQueue2(2);
+
+        System.out.println("queue : " + queue);
+        queue.add(1);
+        System.out.println("queue : " + queue);
+        queue.add(2);
+        System.out.println("queue : " + queue);
+        queue.add(3);
+        System.out.println("queue : " + queue);
+        queue.add(4);
+        System.out.println("queue : " + queue);
+        queue.add(5);
+        System.out.println("queue : " + queue);
+        queue.remove();
+        System.out.println("queue : " + queue);
+        queue.remove();
+        System.out.println("queue : " + queue);
+        queue.remove();
+        System.out.println("queue : " + queue);
+        queue.remove();
+        System.out.println("queue : " + queue);
+        queue.remove();
+        System.out.println("queue : " + queue);
+    }
+}
+----
+
+결과는 다음과 같다.
+
+[source,console]
+----
+queue : []
+queue : [ 1]
+queue : [ 1,  2]
+queue : [ 1,  2,  3]
+queue : [ 1,  2,  3,  4]
+queue : [ 1,  2,  3,  4,  5]
+queue : [ 2,  3,  4,  5]
+queue : [ 3,  4,  5]
+queue : [ 4,  5]
+queue : [ 5]
+queue : []
+----
+
+=== 문제 6.2. 앞에서 구현한 ArrayQueue2에는 치명적인 문제가 있다. 확인하고 수정한 후 테스트하세요.
+
+* 아래의 과정 수행 후 문제점 확인
+** ArrayQueue2에 배열 크기를 알 수 있는 getCapacity() 메서드 추가
+** 요소 하나를 넣었다 빼기를 반복
+* 문제점은? 해결하기 위한 방법은?
+** link:https://en.wikipedia.org/wiki/Circular_buffer[Circular Buffer(링버퍼)]
+
+[source,java]
+----
+class Problem6_2 {
+    public static void main(String[] args) {
+        ArrayQueue2 queue2 = new ArrayQueue2(2);
+        ArrayQueue3 queue3 = new ArrayQueue3(2);
+
+        for (int i = 0; i < 10; i++) {
+            System.out.printf("queue2[%2d] : %5s - queue3[%2d] : %5s%n",
+                    queue2.getCapacity(), queue2.toString(),
+                    queue3.getCapacity(), queue3.toString());
+            queue2.add(i);
+            queue3.add(i);
+            System.out.printf("queue2[%2d] : %5s - queue3[%2d] : %5s%n",
+                    queue2.getCapacity(), queue2.toString(),
+                    queue3.getCapacity(), queue3.toString());
+            queue2.remove();
+            queue3.remove();
+        }
+        System.out.printf("queue2[%2d] : %5s - queue3[%2d] : %5s%n",
+                queue2.getCapacity(), queue2.toString(),
+                queue3.getCapacity(), queue3.toString());
+    }
+}
+
+----
+
+결과는 아래와 같다.
+
+[source,console]
+----
+queue2[ 2] :    [] - queue3[ 2] :    []
+queue2[ 2] :  [ 0] - queue3[ 2] :  [ 0]
+queue2[ 2] :    [] - queue3[ 2] :    []
+queue2[ 2] :  [ 1] - queue3[ 2] :  [ 1]
+queue2[ 2] :    [] - queue3[ 2] :    []
+queue2[ 7] :  [ 2] - queue3[ 2] :  [ 2]
+queue2[ 7] :    [] - queue3[ 2] :    []
+queue2[ 7] :  [ 3] - queue3[ 2] :  [ 3]
+queue2[ 7] :    [] - queue3[ 2] :    []
+queue2[ 7] :  [ 4] - queue3[ 2] :  [ 4]
+queue2[ 7] :    [] - queue3[ 2] :    []
+queue2[ 7] :  [ 5] - queue3[ 2] :  [ 5]
+queue2[ 7] :    [] - queue3[ 2] :    []
+queue2[ 7] :  [ 6] - queue3[ 2] :  [ 6]
+queue2[ 7] :    [] - queue3[ 2] :    []
+queue2[12] :  [ 7] - queue3[ 2] :  [ 7]
+queue2[12] :    [] - queue3[ 2] :    []
+queue2[12] :  [ 8] - queue3[ 2] :  [ 8]
+queue2[12] :    [] - queue3[ 2] :    []
+queue2[12] :  [ 9] - queue3[ 2] :  [ 9]
+queue2[12] :    [] - queue3[ 2] :    []
+----
+
+* 배열 크기가 계속해서 증가되는 문제 해결
+* 모든 문제가 해결되었나?
+** 프로그램 시작과 함께 요소의 삽입이 10000번 발생한 후
+
+== Linked data를 이용한 큐 구현
+
+배열을 이용해 큐를 구현할 경우 다음과 같은 문제들이 발생할 수 있다.
+
+* 인덱스 증가로 인한 배열 공간 낭비
+** 순환 버퍼를 이용해 해결
+* 요소 유입의 급속한 증가에 따라 큰 배열 할당 후 적은 유입
+
+=== 예제 6.2. Linked data를 이용해 LinkedQueue를 작성하고, 테스트하세요.
+
+* 앞에서 구현한 ArrayQueue를 linked data를 이용해 구현
+* 앞에서 정의한 Node 클래스 사용
++
+[source,java]
+----
+include::./example/ch6/Node.java[]
+----
+
+[source,java]
+----
+
+public class LinkedQueue implements Queue {
+    Node head;
+
+    public LinkedQueue(int size) {
+        //...
+    }
+
+    @Override
+    public void add(int element) {
+        //...
+    }
+
+    @Override
+    public int element() {
+        //...
+    }
+
+    @Override
+    public int remove() {
+        //...
+    }
+
+    @Override
+    public String toString() {
+        //...
+    }
+
+    public static void main(String[] args) {
+        Queue queue = new LinkedQueue();
+
+        System.out.println("queue : " + queue);
+        queue.add(1);
+        System.out.println("queue : " + queue);
+        queue.add(2);
+        System.out.println("queue : " + queue);
+        queue.add(3);
+        System.out.println("queue : " + queue);
+        queue.add(4);
+        System.out.println("queue : " + queue);
+        queue.add(5);
+        System.out.println("queue : " + queue);
+        queue.remove();
+        System.out.println("queue : " + queue);
+        queue.remove();
+        System.out.println("queue : " + queue);
+        queue.remove();
+        System.out.println("queue : " + queue);
+        queue.remove();
+        System.out.println("queue : " + queue);
+        queue.remove();
+        System.out.println("queue : " + queue);
+    }
+}
+----
+
+=== 문제 6.3. 앞에서 작성한 LinkedQueue를 이용해 요청되는 추가 기능을 작성하고, 테스트하세요.
+
+* 큐에서 가지고 있는 요소 수를 알 수 있는 size()
+* 큐가 비워져 있는 확인 가능한 isEmpty()
+
+=== 문제 6.4. LinkedQueue는 ArrayQueue와 비교했을 때, 필요 이상의 자원을 활용하거나 특정한 연산(add) 실행시 메모리 재할당 문제등에서 유리한 점을 보인다. 이에 반해 일정 크기 이내에서만 반복되거나 짧은 큐에 빈번한 요소 삽입과 삭제에서는 메모리 관리 면에서 불리하다.
+
+*
+
+== 리뷰 질문
+
+1. 큐가 FIFO 구조로 불리는 이유는 무엇인가요?
+2. 큐를 다음과 같이 부르는 것이 의미가 있을까요?
+a. LILO 구조?
+b. FILO 구조?
+3. 연속적인 구현에 비해 연결 구현의 큐의 장단점은 무엇인가요?

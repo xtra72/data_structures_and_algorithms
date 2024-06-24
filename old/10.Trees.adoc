@@ -1,0 +1,457 @@
+:stem: latexmath
+
+= Trees
+
+== Tree란?
+
+* (뒤집어진) 나무 형태
+* 계층 구조를 갖는 비선형 자료구조
+
+* Tree
+** stem:[r]과 stem:[S] 로 이루어진 pair
+** stem:[r]은 tree의 root
+** stem:[S]는 subtree로 불리는 tree의 집합
+** stem:[S]는 아무것도 없는 공집합일 수 있다
+** stem:[r]은 어느 subtree에도 포함되지 않는다
+** Subtree가 없이 stem:[r]만 있는 경우, singleton tree라고 한다
+** 그림에서 점선으로 표시된 원 A,B,C,D 모두 Tree 구조라 할 수 있다.
+
+image::images/fig 10_1.png[align=center]
+
+=== 용어
+
+* Node
+** Tree의 모든 element
+** 그림에서 a,b,c,d
+* Size
+** Tree의 node 수
+* Subtree
+** Node stem:[r]을 root로 가정할때, root stem:[r]에 연결되어 있는 모든 tree
+* Supertree
+** Tree stem:[S]을 subtree로 가지고 있는 모든 tree
+* Parent와 Children
+** Root stem:[r]에 연결되어 있는 subtree stem:[T_j] 의 root를 stem:[r_j]라고 할때, stem:[r]은 stem:[r_j]의 parent
+** stem:[r_j]는 stem:[r]의 children이 된다.
+* Leaf
+** children이 존재하지 않는 node
+* Internal node
+** Child node가 하나 이상 존재할 경우
+* Path
+** 하나의 node에서 다른 node로 연결되는 node들의 나열
+** 위 그림에서 (a, c ,d)는 path이지만
+** (b,c,d)는 path가 될 수 없다
+** path상에는 같은 node가 존재할 수 없다
+** Path가 tree의 root에서 시작될 경우, 이를 root path라 하고
+** Root에서 leaf까지의 path를 나타낼 경우, leaf-to-root path라 한다
+** **Tree의 모든 node는 하나의 root path를 가진다**
+* Depth
+** 특정 node의 root path 길이
+** Root의 depth는 0
+* Level
+** 주어진 level만큼의 depth를 갖는 node의 집합
+* Height
+** Tree에서 가장 긴 depth
+* Ancestor
+** root에서 특정 node까지의 pathub상에 있는 모든 node
+* Descendant
+** 해당 node가 root인 tree에서 자신을 제외한 모든 node
+* Path length
+** Root에서부터 이어진 모든 path 길이의 합
+* Degree
+** Node의 children 갯수
+* Order
+** 모든 node의 degree중 가장 큰 값
+* Full tree
+** Internal node가 모두 같은 degree를 가짐
+** 모든 leaf는 같은 level 임
+
+
+==== 문제. 다음을 tree로 구성해 보자.
+
+* Tree의 root : a
+* internal node : a, b, c, d, e, f
+* Leaf : 9개
+* Path(l, h, c, a)는 leaf-to-root path이며, 길이는 3
+* Node b depth : 1
+* Node m depth : 3
+* Level 2 : e, f, g, h
+* Height : 3
+* a, c, h는 l의 ancestor
+* k는 c의 descendant이지만, b의 descendant는 아님
+* b의 하부 tree에는 b, e, i, j를 node로 가짐
+
+=== Tree 만들기
+
+Tree의 정의를 보고 Tree class를 만들어 보자.
+
+==== 문제. Node class를 구현해 보자.
+
+===== 문제. Tree에서 정의하고 있는 node에서 필요로 하는 필드를 추가해 보자.
+
+먼저, tree를 구성하는 모든 element는 node이므로, node class를 만든다.
+
+[source,java]
+----
+class Node {
+  String name;
+}
+----
+
+모든 node는 0개 이상의 child node를 가질 수 있다.
+
+[source,java]
+----
+class Node {
+  String name;
+	...
+}
+----
+
+Root를 제외한 모든 node는 하나의 parent를 가진다.
+
+[source,java]
+----
+class Node {
+  String name;
+	...
+}
+----
+
+여기까지 node가 가져야 할 필드를 정의해 보았다.
+
+===== 문제. Node가 가져야 할 기능들을 구현해 보자.
+
+* Node는 child node를 추가할 수 있다.
+* Node는 leaf가 될 수 있다.
+* Root를 제외한 모든 node는 parent가 존재한다.
+* Root를 제외한 모든 node는 ancestor가 존재한다.
+* Leaf를 제외한 모든 node는 descentant가 존재한다.
+* Node의 degree 확인이 가능하다.
+
+위 내용을 만족할 수 있는 코드는 아래와 같다.
+
+[source,java]
+----
+class Node {
+  String name;
+
+	...
+
+  public Node(String name) {
+    ...
+  }
+
+  public Node(String name, Node parent) {
+    ...
+  }
+
+  public void add(Node child) {
+    ...
+  }
+
+  public boolean isLeaf() {
+    ...
+  }
+
+  public Set<Node> getAncestor() {
+    ...
+  }
+
+  public Set<Node> getDescentant() {
+    ...
+  }
+
+  public int getDegree() {
+    ...
+  }
+}
+----
+
+==== 연습 문제. Node class를 이용해 Tree class 구현해 보자.
+
+===== 문제. Tree가 가지는 root와 subtree를 정의해 보자.
+
+Tree는 최소 하나의 node를 가져야 하며, 해당 tree에서 최상위 node를 root라고 한다.
+
+[source,java]
+----
+class Tree {
+  Node root;
+}
+----
+
+Tree는 root와 subtree로 구성되어 있다.
+
+어떻게 해야할까?
+
+Node class와 같이 subtree 관리를 위한 필드를 추가해야 할 것인가?
+
+[source,java]
+----
+class Tree {
+  Node root;
+
+  ...
+}
+----
+
+===== 문제. Tree의 size를 확인할 수 있도록 해 보자.
+
+Subtree 문제가 해결되었다면, 나머지 기능들을 하나씩 보도록 하자.
+
+Tree에서 size를 확인할 수 있도록 하자.
+
+Tree의 size를 subtree의 size합에 root를 추가한 것과 같다. 이를 수학적으로 표현하면
+
+[stem]
+++++
+TS = 1 + \sum_{i=1}^{n} TS_i
+++++
+
+여기서, stem:[TS]는 tree T의 size이고, stem:[TS_i]는 tree T의 subtree의 size이다.
+
+[source,java]
+----
+class Tree {
+  Node root;
+
+  ...
+  public int getSize() {
+    ...
+  }
+}
+----
+
+===== 문제. Tree에서 특정 node까지의  root path를 찾아보자.
+
+Root path는 node에서 root까지의 경로 상에 존재하는 node의 나열이다.
+
+[source,java]
+----
+class Tree {
+  Node root;
+  ...
+
+    public ... getRootPath(Node node) {
+    ...
+  }
+}
+----
+
+===== 문제. Tree의 height를 구해 보자.
+
+
+== Decision Trees(의사 결정 트리)
+
+== Ordered Trees
+
+=== Traversal Algorithms(탐색 알고리즘)
+
+==== The Level Order Traversal
+
+==== The Preorder Traversal
+
+==== The Postorder Traversal
+
+== Binary Trees
+
+* Tree중 subtree를 최대 2개까지만 가질 수 있는 tree
+* Subtree는 왼쪽 subtree와 오른쪽 subtree로 구분
+** 왼쪽 subtree와 오른쪽 subtree 어디에 연결되는지에 따라 다른 tree가됨
+** level, depth, length, size 뿐만 아니라 탐색 순서도 같아야 함
+
+
+image::./images/fig 10_2.png[align=center]
+
+
+=== Full Binary Trees
+
+* Height stem:[h] 인 level stem:[ㅣ]과 internal node stem:[m] 은
++
+[stem]
+++++
+\begin{align}
+l &= l_L+l_R = 2^{h-1} + 2^{h-1} = 2 \cdot {2^h}= 2^h\\
+m &= m_L+m_R+1= (2^{h-1}-1)+(2^{h-1}-1)+1= 2 \cdot {2^h}-1= 2^h-1\\
+\end{align}
+++++
+* 모든 node 수 stem:[n]은
++
+[stem]
+++++
+n=2^{h+1}-1
+++++
+* Node stem:[n]개를 가진 경우 height stem:[h]는
++
+[stem]
+++++
+h = lg(n+1)-1
+++++
+
+
+
+=== Identity, Equality, Isomorphic
+
+* Identity
+* Equality
+* Isomorphic
+
+
+
+=== BinaryTree Class 만들기
+
+*
+
+
+== Expression Trees
+
+* Operator(연산자), operand(피연산자) 및 괄호를 수식의 연산 순서에 따라 계산되는 것을 binary tree의 구조로 표현
+* Tree 탐색 방법에 따라 구조 결정
+
+[stem]
+++++
+(5-x)*y + {6 \over {(x+z)}}
+++++
+
+산술식을 아래와 같이 표현한다.
+
+[mermaid,align=center]
+....
+graph TB
+    A((+))-->B((*))
+    A-->C((/))
+    B-->D(("-"))
+    B-->E((y))
+    D-->F((5))
+    D-->G((x))
+    C-->H((6))
+    C-->I((+))
+    I-->J((x))
+    I-->K((z))
+....
+
+=== Expression Tree 만들기
+
+산술식을 expression tree로 만들기는 위해서는 산술식을 어떠한 방법으로 tree탐색을 할지에 따라 결정된다.
+
+* Preoder 탐색을 위해서는 prefix 표기법 사용
+* Inorder 탐색을 위해서는 infix 표기법 사용
+* Postorder 탐색을 위해서는 postfix 표기법 사용
+* 각각의 표기법에 대해서는 stack 과정에서 설명하였다
+
+* Node class는
+** 피연산자 node 또는 연산자 node
+** 부분 연산된 값을 반환한다.
+*** 상수인 경우 해당 값
+*** 변수인 경우 변수의 현재 값
+*** 수식인 경우 계산된 값
+** 문자열 출력시 수식으로 출력한다.
+* 피연산자 node는
+** 상수
+** 변수
+* 연산자 node는
+** 2개의 expression tree를 subtree로 가진다
+
+[mermaid,align=center]
+....
+classDiagram
+  Node <|-- OperandNode
+  Node <|-- OperatorNode
+  OperandNode <|-- ConstantNode
+  OperandNode <|-- VariableNode
+....
+
+
+
+==== 문제. Node class를 구현해 보자.
+
+* Node의 공통 method를 정의한다
+* Node는 연산자 또는 피연산자인 경우에만 실체화 될 수 있다.
+
+[source,java]
+----
+abstract class Node {
+  public abstract int getValue();// 정수 연산으로 한정
+}
+----
+
+
+
+==== 문제. NodeOperand class를 구현해 보자
+
+* NodeOpenand를 구현하여 아래 테스트 코드가 성공적으로 수행되는지 확인한다.
+
+[source,java]
+----
+class ExpressionTreeTest {
+  ...
+  @Test
+  public void testOperandNode() {
+    Node nodeConstant = new NodeConstant(5);
+    int x = 10;
+    Node nodeVariable = new NodeVariable("x", x);
+
+    assertEquals(5, nodeConstant.getValue());
+    assertEquals(x, nodeVariable.getValue());
+    assertEquals("5-x", nodeConstant + "-" + nodeVariable);
+  }
+}
+----
+
+
+
+===== 문제. NodeOperator class를 구현해 보자
+
+* NodeOperator를 구현하여 아래 테스트 코드가 성공적으로 수행되는지 확인한다.
+
+[source,java]
+----
+class ExpressionTreeTest {
+  ...
+  @Test
+  public void testOperandNode() {
+    Node nodeConstant = new NodeConstant(5);
+    x = 10;
+    int y = 5;
+    Node nodeVariable = new NodeVariable("x", x);
+    Node nodeExpression1 = new NodeMinus(nodeConstant, nodeVariable);
+    Node nodeExpression2 = new NodeMultiply(nodeExpression1, new NodeVariable("y", y));
+
+    assertEquals(5, constantNode.getValue());
+    assertEquals(x, variableNode.getValue());
+    assertEquals("5-x", nodeExpression1.toString());
+    assertEquals(5-x, nodeExpression1.getValue());
+    assertEquals("(5-x)*y", nodeExpression2.toString());
+    assertEquals((5-x)*y, nodeExpression2.getValue());
+  }
+
+}
+----
+
+
+
+===== 문제. 다음 수식을 구현된 노드를 이용해 expression tree를 만들어 보자.
+
+[stem]
+++++
+(5-x)*y + {6 \over {(x + z)}}
+++++
+
+
+[source,java]
+----
+class ExpressionTreeTest {
+  ...
+  @Test
+  public void testExpression() {
+    int x = 10;
+    int y = 5;
+    ...
+      assertEquals("((5-x)*y)+(6/(x+y))", expression.toString());
+      assertEquals(((5-x)*y)+(6/(x+y)), expression.getValue());
+  }
+}
+----
+
+
+

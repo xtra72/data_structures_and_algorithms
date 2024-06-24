@@ -1,0 +1,177 @@
+= Recursion
+
+* Recursive function은 스스로를 다시 불러(recursive call) 사용하는 것
+* 간결한 코드로 성능보다는 문제의 표현 중심
+
+
+
+== Simple Recursive Functions
+
+
+
+=== Factorial Function
+
+* Factorial 함수의 정의는 아래와 같다.
+
+$$
+n! = \begin{cases}
+n &\text {if } n = 0\\
+n(n-1)! & \text {if } n > 0
+\end{cases}
+$$
+
+
+
+==== 연습 문제. Factorial function을 recursive function으로 구현해 보자
+
+
+
+==== 연습 문제. Factorial function을 반복 호출로 구현해 보자
+
+
+
+=== Fibonacci Numbers(피보나치 수열)
+
+* 피보나치 수열의 정의는 아래와 같다.
+
+$$
+F_n = \begin{cases}
+0 & \text {if } n = 0\\
+1 & \text {if } n = 1\\
+F_{n-1} + F_{n-2} & \text {if } n > 1
+\end{cases}
+$$
+
+==== 연습 문제. 피보나치 수열을 recursive function으로 구현해 보자
+
+
+
+==== 연습 문제. 피보나치 수열을 반복 호출로 구현해 보자
+
+
+
+=== 물음
+
+* 함수를 다시 불러 구현한 것과 반복으로 불러 구현 것의 차이는 무엇인가요? 어떠한 장단점이 있나요?
+
+* Recursive function은 언제 끝나는가? 그리고, 이것을 무엇이라고 하는가?
+
+
+
+== Recursive Function의 동작
+
+* Recursive function이 동작하는 방식에 대해 확인
+
+
+
+=== Factorial Function 따라가기
+
+
+
+==== 연습 문제. Factorial function에 동작 과정을 확인하기 위한 출력문을 추가해 보자.
+
+* 함수의 시작 시점에 주어진 parameter를 출력
+* 함수의 수행이 완료되고 반환되는 시점에 결과값 출력
+
+~~~java
+public int factorial(int n) {
+  System.out.println(...);
+
+  ...
+
+  int value =	n * factorial(n - 1); // value는 출력을 위한 임시 변수
+  System.out.println(...);
+  return	value;
+  ...
+}
+~~~
+
+
+
+==== 연습 문제. 사용하는 개발 환경에서 제공되는 디버깅 도구를 이용해 callstack을 확인해 보자.
+
+
+
+== Mutual Recursion
+
+* Direct recursion
+
+* Indirect recursion
+
+* Mutual recursion
+
+
+![mutual recursion](./images/mutual recursion.png)
+
+// TODO : 연습 문제 필요
+
+== 응용 문제
+
+
+
+=== 문제. The Towers of Hanoi(하노이 탑)
+
+1883년 프랑스의 수학자 에두아르드 뤼카(Lucas,E. : 1842~1891)가 처음으로 발표한 게임이다. 이후 여러 사람을 거치면서 다음과 같은 전설이 덧붙여졌다.
+
+**고대 인도 베나레스에 있는 한 사원의 이야기**
+여기에는 다이아몬드로 이루어진 3개의 기둥이 있고, 그 기둥 중 하나에 가운데 구멍이 나 기둥에 끼울 수 있게 된 64개의 크기가 각각 다른 황금 원반이 꽂혀 있다고 한다. 황금 원반은 가장 아래쪽에 있는 것이 가장 크고 위로 갈수록 점차 작아져 전체적으로 원추형의 탑을 이루고 있는데, 원반은 한 번에 하나씩만 옮길 수 있으며 작은 원반 위에 그보다 더 큰 원반을 옮길 수 없다.
+이 규칙으로 64개의 원판을 처음 놓여 있던 막대에서 다른 막대로 모두 옮기면 탑은 무너지고 세상의 종말이 온다고 한다.
+
+[발취 : 나무위키]
+
+
+
+=== 규칙
+
+* 3개의 막대가 있습니다.
+* 하나의 막대에는 여러개의 원판이 쌓여 있습니다.
+* 원반은 위로 갈수록 점점 작아집니다.
+* 원반을 다른 막대로 옮기려 합니다.
+* 원반은 한번에 한개만 옮길 수 있습니다.
+* 원반은 작은 원반위로 옮길 수 없습니다.
+
+
+
+=== 보기
+
+3개의 원반으로 첫번째 기둥에서 두번째 기둥으로 옮기기
+
+![하노이탑](./images/하노이탑.png)
+
+
+
+=== 필요 기술
+
+* Recursive Algorithm
+* Stack
+
+
+
+=== 문제. Greatest Common Divisor(GCD, 최대 공약수) 구하기
+
+두 다항식 또는 자연수 사이의 최대공약수를 구하는 알고리즘중 하나인 유클리드 호제법)을 이용해 구할 수 있다.
+
+$$
+GCD(a,b) =   \begin{cases}
+  \begin{flalign*}
+  GCD(b, a \% b) \quad &a > b\\
+  b \quad &a \% b = 0\\
+  \end{flalign*}
+  \end{cases}\\
+$$
+
+* Iterative call을 이용해 구현
+
+* Recursive call을 이용해 구현
+
+
+
+=== 문제. Least Common Multiple(LCM, 최소 공배수) 구하기
+
+두 자연수에 대한 최소 공배수는 두 수의 곱과 최대 공약수를 이용해 구할 수 있다.
+
+$$
+LCM(a,b) = {{a * b} \over GCD(a, b)}
+$$
+
+// TODO : 연습 문제 추가 필요

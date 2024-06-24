@@ -1,0 +1,249 @@
+= Queues
+
+== Queues 란?
+
+* FIFO(first-in-first-out)
+** 먼저 넣은 데이터가 먼저 나오는 구조
+* 새로 넣는 데이터는 마지막에 위치
+* 가지고 있는 element중 가장 앞에 있는 element만 접근 가능
+
+=== 기본 연산
+
+* add : Queue의 마지막에 새로운 element 추가
+* remove : Queue의 제일 앞 element 제거
+
+[cols="1a,5a,2a", frame=none,grid=none]
+|===
+^s|Command
+^s|Action
+^s|Java
+^s|add
+|image::./images/queue-add.png[Queue add]
+|
+[source,java]
+----
+queue.add(1);
+queue.add(2);
+----
+^s|remove
+|image::./images/queue-remove.png[Queue remove]
+|
+[source,java]
+----
+queue.remove();
+----
+|===
+
+=== 부가 연산
+
+* peek : Queue의 제일 앞 element 참조
+* empty : Queue가 비워져 있는지 확인
+
+[cols="1a,5a,2a", frame=none,grid=none]
+|===
+^s|Command
+^s|Action
+^s|Java
+s|peek
+|image::./images/queue-peek.png[Queue peek]
+|
+[source,java]
+queue.peek();
+s|empty
+|
+|
+[source,java]
+queue.empty();
+|===
+
+
+== Queue 구현
+
+JCF에서 제공하는 Queue interface에 맞춰 다양한 방법으로 queue를 구현해 보자.
+
+
+=== Queue interface
+
+JCF에서 제공하는 Queue interface는 아래와 같다.
+
+[source,java]
+----
+public class Queue<E> {
+  boolean	add(E e);
+  E	element();
+  boolean	offer(E e);
+  E	peek();
+  E	poll();
+  E	remove();
+}
+----
+
+==== 물음
+
+* element() method와 peek() method는 queue의 첫번째 element를 돌려 준다. 그럼 무엇이 다를까?
+
+=== Array이를 이용한 queue 구현
+
+==== 연습 문제. 배열을 이용해 정수를 담을 수 있는 Queue을 만들어 보자.
+
+[source,java]
+----
+public class ArrayQueue<E> impliment Queue<E> {
+  ...
+
+  public void add(E element) {
+    ...
+  }
+
+  public E remove() {
+    ...
+  }
+
+  public E peek() {
+    ...
+  }
+}
+----
+
+===== 물음
+
+* 정의되어 있는 함수 이외에 어떠한 것들이 필요한가?
+* Queue의 크기는 어떻게 결정되는가?
+* 더 이상 요소를 추가할 수 없을 경우 어떻게 해야 하는가? 그리고, 어떠한 문제가 있는가?
+* Queue이 비워져 있는 상태에서 remove()나 peek() 호출시 어떻게 처리해야 할까?
+
+=== Linked data structure를 이용한 queue 구현
+
+==== 연습 문제. 링크드 데이터 구조를 이용해 정수를 담을 수 있는 Queue을 만들어 보자
+
+[source,java]
+----
+public class LinkedDataQueue<E> impliment Queue<E> {
+  ...
+
+  public void add(E element) {
+    ...
+  }
+
+  public E remove() {
+    ...
+  }
+
+  public E peek() {
+    ...
+  }
+}
+----
+
+===== 물음
+
+* 정의되어 있는 함수 이외에 어떠한 것들이 필요한가?
+* Queue의 크기는 어떻게 결정되는가?
+* 요소를 계속해서 추가할때 ArrayQueue과 어떠한 차이점이 있는가?
+
+=== 구현 방식 비교
+
+==== 연습 문제. 두방식을 비교해 보자
+
+* Queue의 기본 동작은 넣고 빼는 것이다. 적절히 반복하도록 작성한다.
+* 두 종류의 queue의 성능 비교를 위해서는 동일한 동작이 필요하다. 이를 고려하여 작성하라.
+* Queue 종류에 따른 장단점이 비교될 수 있도록 작성한다.
+* Queue 동작의 성능은 시스템에서 제공하는 시간으로 측정 가능하다. 수행횟수가 적을 경우 비교가 되지 않으므로 충분히 큰 횟수를 실행한다.
+
+[source,java]
+----
+ public class TestQueue {
+   public static void main(String [] args) {
+     // TODO : 작성 필요
+     ...
+   }
+ }
+----
+
+===== 물음
+
+* Queue에 add와 remove를 반복호출할 경우 어떠한 문제가 생기는가?
+* Stack과 유사한 동작이지만, stack에서는 문제가 되지 않았다. 문제의 원인은 무엇인가?
+* 해결 방안은?
+
+Queue의 내부에서 관리되는 버퍼를 원형으로 구성하여 순환하도록 사용함으로써, 일반 배열 버퍼에서 연산 반복으로 발생할 수 있는 문제를 해결할 수 있다.
+
+==== 연습 문제. ArrayQueue를 확장하여 ArrayCircularQueue를 만들어 보자
+
+
+==== 연습 문제. LinkedDataQueue를 확장하여 LinkedDataCircularQueue를 만들어 보자
+
+* Linked data를 사용할 경우, CircularQueue를 만들 필요가 있는가?
+
+==== 연습 문제. 놀이공원에서 기구 대기 예약 시스템 만들어 보자
+
+놀이 공원에서 새롭게 도입한 기구의 인기 많아 대기 줄이 너무 길다. 대기자들에 편리함을 제공하기 위해 대기 시스템을 만들려고 합니다. 시스템 기능은 아래와 같이 단순하다.
+
+* 기구에는 한번에 4명 탑승이 가능하다.
+* 대기자는 대기 시스템에 이름을 등록한다.
+* 놀이기구 관리자는 일정 시간 간격으로 새로운 탑승자로 교체한다.
+
+
+
+==== 연습 문제. 매직패스 도입하기
+
+놀이 공원에서 매출 향상을 위해 매직패스를 도입하기 위해 시스템을 수정하려 한다.
+
+* 매직패스를 제시하면 대기자가 있더라도 먼저 탑승이 가능하다.
+
+
+==== 연습 문제. 배려자 우선 탑승 제도 도입하기
+
+놀이 공원에서 추가적으로 배려자 (어린이, 노약자)에 대해 대기 시간을 최소화 하기 위한 시스템을 도입하려 한다.
+
+* 배려자는 배려자를 제외한 모든 탑승자보다 우선적으로 탑승할 수 있도록 한다.
+
+=== Queue의 입력과 출력이 오른쪽에서 왼쪽 혹은 왼쪽에서 오른쪽으로 정해져야만 하는가?
+
+==== 연습 문제. 문장이나 낱말, 숫자등을 거꾸로 읽어도 동일한지를 queue 수정하고 이를 이용해 검사해 보라.
+
+문제에서와 같이 앞에서부터 읽는 것과 뒤에서부터 읽는 것이 동일할 경우, palindrome(회문)이라한다.
+
+* 주어진 문장이나 낱말, 숫자를 문자 단위로 나누어 queue에 넣는다
+* Queue의 앞과 뒤에서 하나씩 비교하고 같으면 앞과 뒤의 요소를 하나씩 제거하며, 동일한 과정을 queue가 빌때까지 반복한다.
+* Queue에 남아 있는 요소가 없다면 palindrome이라 할 수 있다.
+
+[source,java]
+----
+public class Deque<E> {
+ 	...
+
+  public void addFirst(E element) {
+    ...
+  }
+
+  public void addLast(E element) {
+    ...
+  }
+
+  public E removeFirst() {
+    ...
+  }
+
+  public E removeLast() {
+    ...
+  }
+
+  public E peekFirst() {
+    ...
+  }
+
+  public E peekLast() {
+    ...
+  }
+
+  ...
+}
+----
+
+== 요약 정리
+
+* FIFO
+* Queue를 구현하기 위해 사용되는 자료구조는 ?
+* 자료구조별로 queue를 구현한 경우, 특징 또는 장단점은?
+* Queue 사용해야 하는 요소의 수가 제한적일 경우, 어떠한 구조를 사용하는게 좋은가? 이유는?

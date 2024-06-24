@@ -1,0 +1,276 @@
+= 스택
+
+* 후입선출(LIFO) 방식을 구현하는 컬렉션
+* 접근할 수 있는 유일한 객체가 마지막에 삽입된 객체
+** 쌓여져 있는 책
+** 하노이 탑
+
+== 스택 연산
+
+스택의 기본 연산
+
+* push - 스택의 맨 위에 요소 추가
+* peek - 스택의 맨 위에 있는 현재 요소 접근
+* pop - 스택의 맨 위에 있는 현재 요소 제거
+
+== Stack Interface
+
+[source,java]
+----
+public interface Stack {
+    public void push(E element);
+    public E peek();
+    public E pop();
+    public boolean isEmpty();
+    public int size();
+}
+----
+
+* 타입 매개 변수 E를 갖는 Generic class
+* 추가적으로 isEmpty, size 선언
+
+== 인덱스 기반 구현
+
+* 배열을 이용해 Stack 구현
+* 초기 설정된 크기내에서만 사용될 경우, 빠르고 효율적
+
+
+=== 문제 5.3 배열을 이용해 구현되는 ArrayStack<E>를 구현해 보자.
+
+* 데이터를 배열에 저장하도록 배열을 이용해 Stack을 구현 함.
+* 초기 배열 크기를 주거나 기본 크기 100을 갖도록 함.
+* 초기 사이즈가 주어졌지만, 추가적인 데이터 저장 공간이 필요할 경우 배열을 느릴 수 있음.
+
+**참고**
+* 타입 매개변수 E에 대해서는 생성자 호출이 불가능하여, Object 타입으로 생성 후 타입 변환
+
+
+== 연결된 구현
+
+* Linked data를 이용해 Stack 구현
+
+=== 문제 5.4 Linked data를 이용해 구현하는 LinkedStack<E>를 구현해 보자.
+
+* 앞에서 구현한 Node class 이용
+* Stack 사이즈에 제한 없음(VM이 허용하는 범위 내)
+
+=== 문제 5.5 LinkedStack<E>에서 자원 할당과 해제 과정을 최소화 하라.
+
+* Linked data를 이용할 경우, 메모리 공간을 할당하거나 반환(가베지콜렉터에 의해 자동)할때 VM에 주는 부하가 큼
+* 자원의 재활용을 통해 효율적으로 처리.
+
+== 공통 코드 추상화
+
+* 구현의 일부가 기본 데이터 구조와 독립적일 때, 이러한 부분을 추상 클래스에서 별도로 구현하는 것이 유리
+
+=== 예제 5.5 추상 스택 클래스
+
+
+[source,java]
+----
+1	public abstract class AbstractStack<E> implements Stack<E> {
+2	    protected int size;
+3
+4	    public boolean isEmpty() {
+5	        return (size == 0);
+6	    }
+7
+8	    abstract public E peek();
+9
+10	    abstract public E pop();
+11
+12	    abstract public void push(E element);
+13
+14	    public int size() {
+15	        return size;
+16	    }
+17	}
+----
+
+백킹 구조에 따라 의존하는 세 가지 메서드는 추상으로 선언됩니다 (8, 10, 12번 줄). 이는 물론 클래스 자체를 추상으로 선언해야 합니다.
+
+2번 줄에서 size 필드가 private 대신 protected로 선언되어 있어야 하는데, 이는 확장된 구상 클래스에서 접근할 수 있도록 하기 위함입니다.
+
+예제 5.5에 표시된대로 AbstractStack 클래스가 구현되었으므로, 이제 예제 5.3(104페이지) 및 예제 5.4(106페이지)의 두 구체적인 구현을 간소화할 수 있습니다. 각 클래스 헤더에 extends AbstractStack<E> 표현식을 추가하고, 그런 다음 isEmpty() 및 size() 메서드와 size 필드의 선언을 제거하면 됩니다. 이는 물론 JCF에서 사용하는 전략입니다. (70페이지의 그림 4.1을 참조하십시오.)
+
+== 응용: RPN 계산기
+
+스택 데이터 구조는 가장 간단한 구조 중 하나이지만, 특정 중요한 응용 분야에서 필수적입니다. 이러한 일부는 다음 예제에서 설명됩니다.
+
+산술 식이 _후위 표기법_ (역 _폴란드 표기법_, 또는 RPN이라고도 함)에 있다고 합니다. 이는 각 연산자가 피연산자 뒤에 배치되는 경우입니다. 예를 들어, 3*(4 + 5)의 후위 표기법은 3 4 5 + *입니다. [식 3*(4 + 5)는 _중위 표기법_이라고 합니다.] 후위 표기법은 중위 표기법보다 기계에서 처리하기 쉽습니다. 후위 표기법을 처리하는 계산기를 _RPN 계산기_라고 합니다.
+
+=== 예제 5.6 RPN 계산기
+
+이 프로그램은 후위 표기법 식을 구문 분석하여 지정된 산술을 수행합니다. 피연산자를 누적하기 위해 스택을 사용합니다.
+
+
+[source,java]
+----
+1	public class Calculator {
+2	    public static void main(String[] args) {
+3	        Deque<String> stack = new ArrayDeque<String>();
+4	        Scanner in = new Scanner(System.in);
+5	        while (true) {
+6	            String input = in.nextLine();
+7	            char ch = input.charAt(0);
+8	            if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+9	                double y = Double.parseDouble(stack.pop());
+10	                double x = Double.parseDouble(stack.pop());
+11	                double z = 0;
+12	                switch	(ch)	{
+13	                    case	'+':	z = x +	y; break;
+14	                    case	'-':	z = x -	y; break;
+15	                    case	'*':	z = x *	y; break;
+16	                    case	'/':	z = x /	y;
+17	                }
+18	                System.out.printf("\t%.2f %c %.2f = %.2f%n", x, ch, y, z);
+19	                stack.push(new Double(z).toString());
+20	            } else if (ch == 'q' || ch == 'Q') {
+21	                return;
+22	            } else {
+23	                stack.push(input);
+24	            }
+25	        }
+26	    }
+27	}
+----
+
+Here is one run:
+
+[source,console]
+----
+3
+4
+5
++
+4.00 + 5.00 = 9.00
+*
+3.00 * 9.00 = 27.00
+10
+/
+27.00 / 10.00 = 2.70
+1 –
+2.70 – 1.00 = 1.70
+Q
+----
+
+3번 줄에서 프로그램은 예제 5.1(103페이지)의 것과 같은 문자열 스택을 인스턴스화합니다. 그런 다음 5번 줄에서 무한 while 루프에 들어가며, 각 반복마다 상호 작용적으로 문자열을 읽습니다(6번 줄).
+
+사용자가 +, -, *, /, q 또는 Q 이외의 입력을 하면, 프로그램은 숫자로 간주하고 해당 숫자를 스택에 푸시합니다(23번 줄). 이 연산자 중 하나인 경우, 최상위 두 숫자가 스택에서 팝되고(9-10번 줄), 해당 숫자에 대해 연산이 적용됩니다. 결과가 출력되고(18번 줄), 스택에 푸시됩니다(19번 줄).
+
+사용자가 q 또는 Q(“quit”의 약자)를 입력하면 프로그램이 종료됩니다.
+
+인간 독자들은 산술 표현식에 대해 후위 표기법보다 중위 표기법을 선호합니다. 다음 예제는 주어진 중위 표현식을 후위 표현식으로 변환합니다.
+
+=== 예제 5.7 중위 표현식을 후위 표현식으로 변환하기
+
+
+[source,java]
+----
+1	public class TestScanner {
+2	    public static void main(String[] args) {
+3	        Deque<String> stack = new ArrayDeque<String>();
+4	        String line = new Scanner(System.in).nextLine();
+5	        System.out.println(line);
+6	        Scanner scanner = new Scanner(line);
+7	        while (scanner.hasNext()) {
+8	            if (scanner.hasNextInt()) {
+9	                System.out.print(scanner.nextInt() + " ");
+10	            } else {
+11	                String str = scanner. next();
+12	                if ("+-*/".indexOf(str) >= 0) {
+13	                    stack.push(str);
+14	                } else if (str.equals(")")) {
+15	                    System.out.print(stack.pop() + " ");
+16	                }
+17	            }
+18	        }
+19	        while (!stack.isEmpty()) {
+20	            System.out.print(stack.pop() + " ");
+21	        }
+22	        System.out.println();
+23	    }
+24	}
+----
+
+The output is:
+
+[source,java]
+----
+( 80 - 30 ) * ( 40 + 50 / 10 )
+80 30 - 40 50 10 / + *
+----
+
+출력 결과는 프로그램이 중위 표현식 ( 80 - 30 )*( 40 + 50 / 10 )을 후위 표현식인 80 30 - 40 50 10 / + *으로 변환했음을 보여줍니다.
+
+프로그램은 스택을 사용합니다. 이는 라인 3에서 선언되고, 스캐너는 라인 6에서 선언됩니다. 스캐너는 입력 라인에서 정수와 문자열 토큰을 추출합니다. 토큰이 정수인 경우 라인 9에서 즉시 출력됩니다. 그것이 "+", "-", "*", "/" 중 하나인 경우 라인 13에서 스택에 푸시됩니다. 만약 그것이 ")" 문자열이라면, 스택의 맨 위 요소가 팝되고 라인 15에서 출력됩니다. 입력 라인이 완전히 구문 분석된 후, 남은 요소들은 라인 19-21에서 스택에서 팝되어 출력됩니다.
+
+== JCF Stack 클래스
+
+* Stack는 JCF가 개발되기 전에 작성
+* Stack class보다는 ArrayDeque 사용 권장
++
+[source,java]
+----
+Deque<String> stack = new ArrayDeque<String>();
+----
+
+=== EXAMPLE 5.1 Testing a String Stack
+
+[source,java]
+----
+1	public class TestStringStack {
+2	    public static void main(String[] args) {
+3	        Deque<String> stack = new ArrayDeque<String>();
+4	        stack.push("GB");
+5	        stack.push("DE");
+6	        stack.push("FR");
+7	        stack.push("ES");
+8	        System.out.println(stack);
+9	        System.out.println("stack.peek(): " + stack.peek());
+10		    System.out.println("stack.pop(): " + stack.pop());
+11		    System.out.println(stack);
+12		    System.out.println("stack.pop(): " + stack.pop());
+13		    System.out.println(stack);
+14		    System.out.println("stack.push(\"IE\"): ");
+15		    stack.push("IE");
+16		    System.out.println(stack);
+17	    }
+18	}
+----
+
+결과는 아래와 같다.
+
+[source,console]
+----
+[ES, FR, DE, GB]
+stack.peek(): ES
+stack.pop(): ES
+[FR, DE, GB]
+stack.pop(): FR
+[DE, GB]
+stack.push("IE"):
+[IE, DE, GB]
+----
+
+* Deque에서 Stack의 기본 연산 지원
+* ArrayDeque로 인스턴스를 생성 후 사용
+
+== 리뷰 질문
+
+1. 스택이 LIFO 구조라고 불리는 이유는 무엇인가요?
+2. 스택을 다음과 같이 부르는 것이 합리적일까요?
+a. LILO 구조?
+b. FILO 구조?
+3. 다음에 대한 설명은 무엇인가요?
+a. Prefix 표기법?
+b. Infix 표기법?
+c. Postfix 표기법?
+4. 후위 표현식에 대해 각각 다음이 사실인지 결정하세요:
+a. x y + z + = x y z + +
+b. x y + z - = x y z - +
+c. x y - z + = x y z + -
+d. x y - z - = x y z - -
+
+
+

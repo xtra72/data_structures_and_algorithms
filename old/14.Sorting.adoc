@@ -1,0 +1,1123 @@
+:stem: latexmath
+
+= Sorting
+
+We saw in Chapter 2 that searching through an array is far more efficient if its elements are sorted first. That fact is obvious to anyone who has ever looked up a number in a phone book or a word in a dictionary. This chapter outlines nine of the most common algorithms for sorting a linear data structure such as an array or a list.
+
+== CODE PRELIMINARIES
+
+All of the sorting algorithms are implemented in this chapter using the same Java signature
+
+[source,java]
+----
+    public static void sort(int[] a)
+----
+
+for sorting an array of integers. This can easily be modified to sort an array of any other primitive type or an array of objects that implement the Comparable interface.
+
+The pseudocode and the Java code include preconditions, postconditions, and loop invariants. These are used to prove that the algorithms are correct and to analyze their complexity.
+
+In the pseudocode we use the notation stem:[s = \lbrace s_{0}, s_{1}, . . . , s_{n-1} \rbrace] for a sequence of n elements. The notation stem:[\lbrace s_{p} \cdots s_{q-1} \rbrace] denotes the subsequence stem:[\lbrace s_{p}, s_{p+1}, \cdots , s_{q-1} \rbrace] of elements from stem:[s_{p}]. to stem:[s_{q–1}]. In Java code comments, we represent the subsequence by stem:[s[p..q)]. For example, stem:[\lbrace s_{3} \cdots s_{7} \rbrace] and stem:[s[3..8)] would both denote the subsequence stem:[\lbrace s_{3}, s_{4}, s_{5}, s_{6}, s_{7}\rbrace].
+Unless otherwise noted, “sorted” will always mean that the elements of the sequence are in ascendingorder: stem:[s_0 \le s_1 \le s_2 \le ... \le s_{n-1}].
+
+All the exchange sorts use this swap() method:
+
+=== EXAMPLE14.1 Aswap()MethodforArrays
+
+[source,java]
+----
+private static void swap(int[] a, int i, int j) {
+    // PRECONDITIONS: 0 <= i < a.length; 0 <= j < a.length;
+    // POSTCONDITION: a[i] and a[j] are interchanged;
+    if (i == j) {
+        return;
+    }
+    int temp=a[j];
+    a[j] = a[i];
+    a[i] = temp;
+}
+----
+
+This method simply swaps the ith and jth elements of the array.
+
+Note the use of preconditions and postconditions, included as comments at lines 2 and 3 of Example 14.1. A precondition is a condition that is assumed to be true before the method is invoked. A postcondition is a condition that is guaranteed to be true after the method has been invoked, provided that the preconditions were true. Preconditions and postconditions define the contract for a method: the “consumer guarantee” that defines the method. They can be used to prove, logically, that the method will always “work” as expected. (For example, see Theorem 14.10 on page 262.)
+
+All the array examples use this print() method:
+
+EXAMPLE14.2 Aprint() Method for Arrays
+[source,java]
+----
+private static void print(int[] a) {
+    for (int ai : a) {
+        System.out.printf("%s ", ai);
+    }
+    System.out.println();
+}
+----
+
+Note the use of Java’s enhanced for loop construct at line 2. The variable ai represents array elements a[i] as the index i traverses its entire range from 0 to a.length – 1.
+
+=== THE JAVA Arrays.sort() METHOD
+
+The standard Java class library defines a sort() method in the java.util.Arrays class. It actually includes twenty overloaded versions of the method: four for arrays of objects, two for arrays of each primitive type except boolean, and two for generic types. (See page 95.)
+
+The signatures for the two sort() methods for arrays of ints are
+
+public static void sort(int[] a)
+public static void sort(int[] a, int p, int q)
+
+The first of these sorts the entire array. The second sorts the subarray a[p..q).
+
+==== EXAMPLE14.3 Using the Arrays.sort() Method
+
+[source,java]
+----
+public static void main(String[] args) {
+    int[]a={77,44,99,66,33,55,88,22};
+    print(a);
+    java.util.Arrays.sort(a);
+    print(a);
+}
+----
+
+The output is:
+[source,console]
+----
+77 44 99 66 33 55 88 22
+22 33 44 55 66 77 88 99
+----
+
+For arrays of elements of a primitive type, the Arrays.sort() method implements the quick sort. (See Algorithm 14.6 on page 263.). For arrays of elements of a reference type, it imple- ments the merge sort. (See Algorithm 14.5 on page 261.)
+
+== THE BUBBLE SORT
+
+
+The bubble sort makes n–1 passes through a sequence of n elements. Each pass moves through the array from left to right, comparing adjacent elements and swapping each pair that is out of order. This gradually moves the larger elements to the right. It is called the bubble sort because if the elements are visualized in a vertical column, then each pass appears to “bubble up” the next largest element by bouncing it off smaller elements, much like the rising bubbles in a carbonated beverage.
+
+=== Algorithm 14.1 The Bubble Sort
+
+(Precondition: s = {s0 . . . sn–1} is a sequence of n ordinal values.)
+(Postcondition: The entire sequence s is sorted.)
+
+1. Do steps stem:[2-4] for stem:[i=n-1] down to 1.
+2. Do step 3 for stem:[j=0] up to stem:[i-1].
+3. If the two consecutive elements sj and sj+1, are out of order, swap them.
+4. (Invariants: The subsequence stem:[\{s_{i} \dots s_{n–1}\}] is sorted, and stem:[s_i = max\{s_{0} \dots s_{i}\}].)
+
+=== EXAMPLE 14.4 The Bubble Sort
+
+[source,java]
+----
+public static void sort(int[] a) {
+// POSTCONDITION: a[0] <= a[1] <= ... <= a[a.length-1];
+    for (int i = a.length-1; i > 0; i--) {  // step 1
+        for (int j = 0; j < i; j++) {       // step 2
+            if (a[j] > a[j+1]) {
+                swap(a, j, j+1);            // step 3
+            }
+        }
+    }
+    // INVARIANTS: a[i] <= a[i+1] <= ... <= a[a.length-1];
+    //             a[j] <= a[i] for all j < i;
+}
+----
+
+=== Theorem 14.1 The Bubble Sort is correct.
+
+See the solution to Problem 14.14 on page 276 for a proof of this theorem.
+
+=== Theorem 14.2 The Bubble Sort runs in stem:[O(n^{2})] time.
+
+See the solution to Problem 14.15 on page 276 for a proof of this theorem.
+
+== THE SELECTION SORT
+
+The selection sort is similar to the bubble sort. It makes the n – 1 passes through a sequence of n elements, each time moving the largest of the remaining unsorted elements into its correct position. But it is more efficient than the bubble sort because it doesn’t move any elements in the process of finding the largest. It makes only one swap on each pass after it has found the largest. It is called the selection sort because on each pass it selects the largest of the remaining unsorted elements and puts it in its correct position.
+
+=== Algorithm 14.2 The Selection Sort
+
+(Precondition: s = {s0 . . . sn–1} is a sequence of n ordinal values.)
+(Postcondition: The entire sequence s is sorted.)
+
+1. Do steps stem:[2-4] for stem:[i=n-1] down to 1.
+2. Locate the index stem:[m] of the largest element among stem:[\{s_{0} \dots s_{i}\}] .
+3. Swap stem:[s_{i}] and stem:[s_{m}].
+4. (Invariants: the subsequence stem:[\{s_{i} \dots s_{n-1}\}] is sorted, and stem:[s_{i} = max\{s_{0} \dots s_{i}\}].)
+
+=== EXAMPLE 14.5 The Selection Sort
+
+public static void sort(int[] a) {
+// POSTCONDITION: a[0] <= a[1] <= ... <= a[a.length-1];
+    for(int i = a.length - 1; i > 0; i--) { // step 1
+        int m = 0;                          // step 2
+        for(int j = 1; j <= i; j++) {
+            if (a[j] > a[m]) {
+                m = j;
+            }
+        }
+        // INVARIANT: a[m] >= a[j] for all j <= i;
+        swap(a, i, m);                      // step 3
+        // INVARIANTS: a[j] <= a[i] for all j <= i;
+        // a[i] <= a[i+1] <= ... <= a[a.length-1];
+    }
+}
+
+=== Theorem 14.3 The selection sort is correct.
+
+See the solution to Problem 14.19 on page 276 for a proof of this theorem.
+
+=== Theorem 14.4 The selection sort runs in stem:[O(n^{2})] time.
+
+See the solution to Problem 14.20 on page 276 for a proof of this theorem.
+
+Note that even though the bubble sort and the selection sort have the same complexity function, the latter runs quite a bit faster. That fact is suggested by the two traces: The bubble sort made 18 swaps while the selection sort made only 7. The selection sort has the advantage of swapping elements that are far apart, so it makes one swap where the bubble sort could require several. (See Exercise 11.8.)
+
+== THE INSERTION SORT
+
+Like the two previous algorithms, the insertion sort makes n – 1 passes through a sequence of n elements. On each pass it inserts the next element into the subarray on its left, thereby leaving that subarray sorted. When the last element is “inserted” this way, the entire array is sorted.
+
+
+=== Algorithm 14.3 The Insertion Sort
+
+(Precondition: stem:[s = \{s_{0} \dots s_{n–1}\}] is a sequence of stem:[n] ordinal values.)
+(Postcondition: The entire sequence stem:[s] is sorted.)
+1. Do steps stem:[2-4] for stem:[i=1] up to stem:[n–1].
+2. Hold the element stem:[s_i] in a temporary space.
+3. Locate the least index stem:[j] for which stem:[s_{j} \ge s_{i}].
+4. Shift the subsequence stem:[\{s_{j} \dots s_{i-1}\}\ up one position to stem:[\{s_{j+1} \dots s_{i}\}].
+5. Copy the held value of stem:[s_i] into stem:[s_j].
+6. (Invariant: the subsequence stem:[\{s_{0} \dots s_{i}\}] is sorted.)
+
+=== EXAMPLE 14.6 The Insertion Sort
+
+public static void sort(int[] a) {
+// POSTCONDITION: a[0] <= a[1] <= ... <= a[a.length-1];
+    for (int i = 1; i < a.length; i++) {    // step 1
+        int ai = a[i], j;                   // step 2
+        for(j = i; j > 0 && a[j-1] > ai;j--){        // step 3
+            a[j] = a[j-i];                      // step 4
+        }
+        a[j] = ai;                      // step 4
+        // INVARIANT: a[0] <= a[1] <= ... <= a[i];
+    }
+}
+
+
+=== Theorem 14.5 The insertion sort is correct.
+See the solution to Problem 14.23 on page 277 for a proof of this theorem.
+
+=== Theorem 14.6 The insertion sort runs in stem:[O(n^{2})] time.
+See the solution to Problem 14.24 on page 277 for a proof of this theorem.
+
+=== Theorem 14.7 The insertion sort runs in stem:[O(n)] time on a sorted sequence.
+See the solution to Problem 14.25 on page 283 for a proof of this theorem.
+
+== THE SHELL SORT
+
+Theorem 14.7 suggests that if the sequence is nearly sorted, then the insertion sort will run nearly in stem:[O(n)] time. That is true. The shell sort exploits that fact to obtain an algorithm that in general runs in better than stem:[O(n^{1.5})] time. It applies the insertion sort repeatedly to skip subsequences such as stem:[\{s_{0}, s_{3}, s_{6}, s_{9}, \dots , s_{n-2}\}] and stem:[\{s_{1}, s_{4}, s_{7}, s_{10}, \dots , s_{n-1}\}]. These are two of the three skip-3-subsequences.
+
+=== Algorithm 14.4 The Shell Sort
+
+(Precondition: s = {s0 . . . sn–1} is a sequence of n ordinal values.)
+(Postcondition: The entire sequence s is sorted.)
+1. Setd=1.
+2. Repeat step 3 until stem:[9d > n].
+3. Set stem:[d=3d+1].
+4. Do steps 5-6 until stem:[d = 0].
+5. Apply the insertion sort to each of the stem:[d] skip-d-subsequences of stem:[s].
+6. Set stem:[d = d/3].
+
+Suppose that stem:[s] has stem:[n = 200] elements. Then the loop at step 2 would iterate three times, increas- ing stem:[d] from 1 to stem:[d = 4, 13], and 40.
+
+The first iteration of the loop at step 4 would apply the insertion sort to each of the 40 skip-40- subsequences stem:[\{s_{0}, s_{40}, s_{80}, s_{120}, s_{160}\}\, \{s_{1}, s_{41}, s_{81}, s_{121}, s_{161}\}, \{s_{2}, s_{42}, s_{82}, s_{122}, s_{162}\}, \dots \, \{s_{39}, s_{79}, s_{119}, s_{159}, s_{199}\}]. Then step 6 would reduce d to 13, and then the second iteration of the loop at step 4 would apply the insertion sort to each of the thirteen skip-13-subsequences stem:[\{s_{0}, s_{13}, s_{26}, s_{39}, s_{52}, s_{65}, \dots , s_{194}\}\, \{s_{1}, s_{14}, s_{27}, s_{40}, s_{53}, s_{66}, \dots , s_{195}\}, \dots , \{s_{12}, s_{25}, s_{38}, s_{51}, s_{64}, s_{77}, \dots , s_{193}\}]. Then step 6 would reduce stem:[d] to 4, and the third iteration of the loop at step 4 would apply the insertion sort to each of the four skip-4-subsequences stem:[\{s_{0}, s_{4}, s_{8}, s_{12}, \dots, s_{196}\}, \{s_{1}, s_{5}, s_{9}, s_{13}, \dots , s_{197}\}, \{s_{2}, s_{6}, s_{10}, s_{14}, \dots , s_{198}\}], and stem:[\{s_{3}, s_{7}, s_{11}, s_{15}, \dots , s_{199}\}]. Then step 6 would reduce stem:[d] to 1, and, and the fourth iteration of the loop at step 4 would apply the insertion sort to the entire sequence. This entire process would apply the insertion sort 58 times: 40 times to subsequences of size stem:[n_1 = 5], 13 times to subsequences of size stem:[n_2 = 15], 4 times to subsequences of size stem:[n_3 = 50], and once to the entire sequence of size stem:[n_4 = n = 200].
+At first glance, the repeated use of the insertion sort within the shell sort would seem to take longer than simply applying the insertion sort directly just once to the entire sequence. Indeed, a direct calculation of the total number of comparisons, using the complexity function stem:[n^2], yields
+stem:[40(n_{1}^{2}) + 13(n_{2}^{2}) + 4(n_{3}^{2}) + 1(n_{4}^{2}) = 40(5^2) + 13(15^2) + 4(50^2) + 1(200^2) = 53,925] which is quite a bit worse than the single
+[stem]
+++++
+n^2 = 200^2 = 40,000
+++++
+But after the first iteration of step 4, the subsequent subsequences are nearly sorted. So the actual number of comparisons needed there is closer to n. Thus, the actual number of comparisons is more like
+[stem]
+++++
+40(n_{1}^{2}) + 13(n_{2}) + 4(n_{3}) + 1(n_{4}) = 40(5^{2}) + 13(15) + 4(50) + 1(200) = 1,595
+++++
+which is quite a bit better than 40,000.
+
+=== Theorem 14.8 The shell sort runs in O(n1.5) time.
+
+Note that, for stem:[n = 200, n^{1.5} = 200^{1.5} = 2,829, which is a lot better than n^{2} = 200^{2} = 40,000].
+
+=== EXAMPLE 14.7 The Shell Sort
+
+[source,java]
+----
+public static void sort(int[] a) {
+    // POSTCONDITION: a[0] <= a[1] <= ... <= a[a.length-1];
+    int d = 1, j, n = a.length;         // step 1
+    while (9*d < n) {                   // step 2
+        d = 3*d + 1;                    // step 3
+    }
+    while (d > 0) {                     // step 4
+        for (int i = d; i < n; i++) {   // step 5
+            int ai = a[i];
+            j = i;
+            while (j >= d && a[j-d] > ai) {
+                a[j] = a[j-d];
+                j -= d;
+            }
+            [aj] = ai;
+        }
+        d /= 3;                         // step 6
+    }
+}
+----
+
+== THE MERGE PORT
+
+The merge sort applies the divide-and-conquer strategy to sort a sequence. First it subdivides the sequence into subsequences of singletons. Then it successively merges the subsequences pairwise until a single sequence is re-formed. Each merge preserves order, so each merged subse- quence is sorted. When the final merge is finished, the complete sequence is sorted.
+Although it can be implemented iteratively, the merge sort is naturally recursive: Split the sequence in two, sort each half, and then merge them back together preserving their order. The basis occurs when the subsequence contains only a single element.
+
+=== Algorithm 14.5 The Merge Sort
+
+(Precondition: s = {sp . . . sq–1} is a sequence of q – p ordinal values.)
+(Postcondition: The entire sequence s is sorted.)
+1. If q-p > 1, do steps 2-5.
+2. Split s into two subsequences, stem:[a = \{s_{p} \dots s_{m-1}\}] and stem:[b = \{s_{m} \dots s_{q-1}}],where
+stem:[m = (q - p)/2].
+3. Sort a.
+4. Sort b.
+5. Merge a and b back into s, preserving order.
+
+=== EXAMPLE 14.8 The Merge Sort
+
+[source,java]
+----
+public static void sort(int[] a) {
+    // POSTCONDITION: a[0] <= a[1] <= ... <= a[a.length -1];
+    sort(a, 0, a.length);
+}
+
+private static void sort(int[] a, int p, int m, int q) {
+    // PRECONDITIONS: 0 <= p <= q <= a.length;
+    // POSTCONDITION: a[p..q) is sorted;
+    if (q - p < 2) {        // step 1
+        return;
+    }
+    int m = (p + q)/2;      // step 2
+    sort(a, p, m);          // step 3
+    sort(a, m, q);          // step 4
+    merge(a, p, m, q);      // step 5
+}
+
+private static void merge(int[] a, int p, int m, int q) {
+    // PRECONDITIONS: 0 <= p <= q <= a.length;
+    //                a[p...m) is sorted;
+    //                a[m...q) is sorted;
+    // POSTCONDITION: a[p...q) is sorted;
+    if (a[m-1] <= a[m]) {
+        return 0;
+    }
+
+    int i = p, j = m, k = 0;
+    int[] tmp = new int[q-p];
+    while(i < m && j < q) {
+        // INVARIANT: temp[0 ... K) is sorted
+        tmp[k++] = (a)[i] <= a[j] ? a[i++] : a[j++];
+    }
+
+    System.arraycopy(a, i, a, p+k, m-1);
+    System.Arraycopy()tmp, 0, a, p, k);
+}
+----
+
+The main sort() method sorts the entire array by invoking the overloaded sort() method with parameters for the starting index k and the length n of the subarray. That three-parameter method sorts the subarray by sorting its left half and its right half separately and then merging them.
+
+The merge() method merges the two halves a[p..m) and a[m..q) into a temporary array, where m is the middle index m = p + n/2. The while loop copies one element on each iteration; it copies the smaller of the two elements a[i] and a[j]. The post increment operator automatically advances the index of the copied element. When all the elements of one half have been copied, the while loop stops and then all the elements are copied back into a[].
+
+**Theorem 14.9 The merge sort runs in O(n lg n) time.**
+
+In general, the merge sort works by repeatedly dividing the array in half until the pieces are singletons, and then it merges the pieces pairwise until a single piece remains. This is illustrated by the diagram in Figure
+14.1. The number of iterations in the first part equals the number of times n can be halved: that is, lg n – 1. In terms of the number and sizes of the pieces, the second part of the process reverses the first. So the second part also has lg n – 1 steps. So the entire algorithm has O(lg n) steps. Each step compares all n elements. So the total number of comparisons is O(n lg n).
+
+
+Theorem 14.10 The merge sort is correct. The proof follows from the preconditions and postconditions given in the code. In the main sort() method, the array is already
+
+
+
+
+Figure 14.1 The merge sort
+
+sorted if its length is 0 or 1. Otherwise, the postcondition of the three-parameter sort() method guarantees that the array will be sorted after that method returns because the entire array is passed to it. That postcondition is the same as the postcondition of the merge() method, which is invoked last, so it remains to verify that the merge() method’s postcondition will be true.
+The merge() method’s postcondition follows from its loop invariant, because when that loop has finished, the tmp[] array is sorted and that is copied back into a[] in the same order. So it remains to verify the loop invariant for all k < q - p.
+Suppose the invariant is false for some k, that is, tmp[0..k) is not sorted. Then there must be some x and y in tmp[0..k), where x was copied into tmp[] before y but x > y. We may assume without loss of generality that x was copied from the left
+
+half of a[] and y from the right half, as shown in Figure 14.2. Thus, x = a[r] and y = a[s] for some indexes r and s such
+
+Figure 14.2 The merge sort
+
+that p  r < i and m  s < j. Now the two halves of a[] are each already separately sorted. Then
+for every element z in a[m..s], z  a[s]. But a[s] = y < x. Therefore, every element z in
+a[m..s] must have been copied into tmp[] before x was, because this assignment
+tmp[k++] = ( a[i]<=a[j] ? a[i++] : a[j++] );
+always copies the smaller element first. But that means that a[s] was copied into tmp[] before
+x. But a[s] = y, which was assumed to have been copied into tmp[] after x. This contradiction proves that the invariant must be true.
+
+
+
+By using the divide-and-conquer strategy, the merge sort obtains an O(n lg n) run time, a significant improvement over the O(n2) times spent by the previous sorting algorithms. The strat- egy is
+1.	Split the sequence into two subsequences.
+2.	Sort each subsequence separately.
+3.	Merge the two subsequences back together.
+The merge sort does the first step in the simplest balanced way possible: It splits the sequence at its middle. If the first step is done in other ways, we obtain different sorting algorithms. The divide-and-conquer strategy is also used in the binary search (page 31).
+The simplest unbalanced way to split the sequence is to put all but the last element in the first subsequence, leaving only the last element in the second subsequence. This produces the recursive version of the insertion sort. (See Problem 14.22 on page 277.)
+Another unbalanced way to split the sequence is to put the largest element alone in the second subsequence, leaving all the other elements in the first subsequence. This produces the recur- sive version of the selection sort. (See Problem 14.18 on page 276.) Not that this makes the merge step 3 trivial: Merely append the largest element to the end of the first subsequence.
+A fourth way to split the sequence is to partition it so that every element in the first subse- quence is less than every the element in the second subsequence. This condition of course is true in the previous case that led to the recursive selection sort. However, if we can obtain this property together with having the two subsequences the same size, then we obtain a new O(n lgn) algorithm, called the quick sort.
+
+THE QUICK SORT
+
+The quick sort is like the merge sort: It is recursive, it requires an auxiliary function with several loops, and it runs in O(n lg n) time. But in most cases it is quicker than the merge sort.
+The quick sort works by partitioning the array into two pieces separated by a single element x that is greater than or equal to every element in the left piece and less than or equal to every element in the right piece. This guarantees that the single element x, called the pivot element, is in its correct position. Then the algorithm proceeds, applying the same method to the two pieces separately. This is naturally recursive and very quick.
+Algorithm 14.6 The Quick Sort
+(Precondition: s = {sp . . . sq–1} is a sequence of q – p ordinal values.) (Postcondition: The entire sequence s is sorted.)
+1.	If q – p > 1, do steps 2–5.
+2.	Apply Algorithm 14.7 to s, obtaining the pivot index m.
+3.	(Invariant: the pivot element sm is in its correct sorted position.)
+4.	Apply the quick sort to {s0, s1, . . . , sm–1}.
+5.	Apply the quick sort to {sm+1, si+2, . . . , sn–1}.
+Algorithm 14.7 Partition
+(Precondition: s = {sp . . . sq–1} is a sequence of q – p ordinal values.)
+(Postcondition: Return m, where p � m < q and si � sm � sj for p � i � m � j < q.)
+1.	Set x = sp (the pivot element).
+2.	Set i = p and j = q.
+
+
+
+3.	Repeat steps 4–7 while i < j.
+4.	Decrement j until either sj < x or j = i.
+5.	If j > i, copy sj into si.
+6.	Increment i until either si > x or i = j.
+7.	If j > i, copy sj into si.
+8.	Copy x into sj.
+EXAMPLE 14.9 The Quick Sort
+1	public static void sort(int[] a) {
+2	// POSTCONDITION: a[0] <= a[1] <= ... <= a[a.length-1];
+3	sort(a, 0, a.length);
+4	}
+5
+6	private static void sort(int[] a, int p, int q) {
+7	// PRECONDITION: 0 <= p <= q <= a.length
+8	// POSTCONDITION: a[p..q) is sorted;
+9	if (q - p < 2) {
+10	return;
+11	}
+12	int m = partition(a, p, q); // step 2
+13	sort(a, p, m);	// step 4
+14	sort(a, m+1, q);	// step 5
+15	}
+16
+17	private static int partition(int[] a, int p, int q) {
+18	// RETURNS: index m of pivot element a[m];
+19	// POSTCONDITION: a[i] <= a[m] <= a[j] for p <= i <= m <= j < q;
+20	int pivot = a[p], i = p, j = q;	// steps 1-2
+21	while (i < j) {	// step 3
+22	while (i < j && a[--j] >= pivot) ; // step 4
+23	if (i < j) {
+24	a[i] = a[j];	// step 5
+25	}
+26	while (i < j && a[++i] <= pivot) ; // step 6
+27	if (i < j) {
+28	a[j] = a[i];	// step 7
+29	}
+30	}
+31	a[j] = pivot;	// step 8
+32	return j;
+33	}
+Note the empty loop at line 22 and line 26. All the action is managed within the loop condition, so no statements are in its body.
+
+Algorithm 14.7 selects the pivot element to be the last element in the sequence. The algorithm works just as well if it is selected to be the first element or the middle element. Slightly better performance is obtained by selecting the median of those three elements.
+The Java Arrays.sort() method implements the quick sort, selecting the pivot as the
+
+median of the three elements {s0, sn/2, sn–1} when n �
+
+40, and the median of 9 equally spaced
+
+elements when n > 40. It also switches to the insertion sort (Algorithm 14.3 on page 258) when
+n < 7.
+
+
+
+Theorem 14.11 The quick sort runs in O(n lg n) time in the best case.
+The best case is when the sequence values are uniformly randomly distributed so that each call to the quick partition algorithm will result in balanced split of the sequence. In that case, each recursive call to the quick sort algorithm divides the sequence into two subsequences of nearly equal length. As with the binary search and the merge sort (Algorithm 14.5 on page 261), this repeated subdivision takes lgn steps to get down to size 1 subsequences, as illustrated in the diagram in Figure 14.2 on page 262. So there are O(lgn) calls made to the quick partition algorithm which runs in O(n) time, so the total running time for the quick sort algorithm is O(n lgn).
+
+Theorem 14.12 The quick sort runs in O(n2) time in the worst case.
+The worst case is when the sequence is already sorted (or sorted in reverse order). In that case, the quick partition algorithm will always select the last element (or the first element, if the sequence is sorted in reverse order), resulting in the most unbalanced split possible: One piece has n–2 elements, and the other piece has 1 element. Repeated division of this type will occur O(n) times before both pieces get down to size 1. So there are O(n) calls made to the quick parti- tion algorithm which runs in O(n) time, so the total running time for the quick sort algorithm is O(n2).
+Note that in the worst case, the quick sort reverts to the selection sort (Algorithm 14.2 on page 257) because each call to quick partition amounts to selecting the largest element from the subse- quence passed to it. So actually, Theorem 14.12 is a corollary to Theorem 14.4 on page 258.
+
+Theorem 14.13 The quick sort runs in O(n lgn) time in the average case.
+The proof of this fact is beyond the scope of this outline.
+
+Theorem 14.14 The quick sort is correct.
+The invariant inside the while loop proof claims that all the elements to the left of a[i] are less than or equal to the pivot element and that all the elements to the right of a[j] are greater than or equal to the pivot. This is true because every element to the left of a[i] that is greater than the pivot was swapped with some element to the right of a[j] that is less than the pivot, and conversely (every element to the right of a[j] that is less than the pivot was swapped with
+some element to the left of a[i] that is greater than the pivot. When that loop terminates, j 
+i, so at that point all the elements that are greater than the pivot have been moved to the right of a[i], and all the elements that are less than the pivot have been moved to the left of a[i]. This is the invariant in step 7 of the quick partition algorithm. So after the swap in step 8, all the elements that are greater than the a[i] are to the right of a[i], and all the elements that are less than the a[i] are to the left of a[i]. This is the invariant in step 7 of the quick partition algorithm, which is the same as the invariant in step 3 of the quick sort algorithm. So then sorting the left segment and the right segment independently will render the entire sequence sorted.
+
+THE HEAP SORT
+
+A heap is by definition partially sorted, because each linear string from root to leaf is sorted. (See Chapter 13.) This leads to an efficient general sorting algorithm called the heap sort. As
+
+
+
+with all sorting algorithms, it applies to an array (or vector). But the underlying heap structure (a binary tree) that the array represents is used to define this algorithm.
+Like the merge sort and the quick sort, the heap sort uses an auxiliary function that is called from the sort() function. And also like the merge sort and the quick sort, the heap sort has complexity function O(n lg n). But unlike the merge sort and the quick sort, the heap sort is not recursive.
+The heap sort essentially loads n elements into a heap and then unloads them. By Theorem
+13.1 on page 247, each element takes O(lgn) time to load and O(lgn) time to unload, so the entire process on n element runs in O(n lgn) time.
+Algorithm 14.8 The Heap Sort
+(Precondition: s = {s0 . . . sn–1} is a sequence of n ordinal values.) (Postcondition: The entire sequence s is sorted.)
+1.	Do steps 2–3 for i = n/2 – 1 down to 0.
+2.	Apply the heapify algorithm to the subsequence {si . . . sn–1}.
+3.	(Invariant: every root-to-leaf path in s is nonincreasing.)
+4.	Do steps 5–7 for i = n –1 down to 1.
+5.	Swap si with s0 .
+6.	(Invariant: The subsequence {si . . . sn–1} is sorted.)
+7.	Apply the heapify algorithm to the subsequence {s0 . . . si–1}.
+Algorithm 14.9 The Heapify
+(Preconditions: ss = {si . . . sj–1} is a subsequence of j–i ordinal values, and both subsequences
+{si+1 . . . sj–1} and {si+2 . . . sj–1} have the heap property.) (Postcondition: ss itself has the heap property.)
+1.	Let t = s2i+1.
+2.	Let sk = max{s2i+1, s2i+2}, so k = 2i+1 or 2i+2, the index of the larger child.
+3.	If t < sk , do steps 4–6.
+4.	Set si = sk .
+5.	Set i = k.
+6.	If i < n/2 and si < max{s2i+1, s2i+2}, repeat steps 1–4.
+7.	Set sk = t.
+There are two aspects to these algorithms that distinguish them from the methods outlined in Chapter 12. The heaps here are in the reverse order, so each root-to-leaf path is descending. And these algorithms use 0-based indexing. The reverse order guarantees that heapify will always leave the largest element at the root of the subsequence. Using 0-base indexing instead of 1- based indexing renders the sort() method consistent with all the other sort() methods at the expense of making the code a little more complicated.
+EXAMPLE 14.10 The Heap Sort
+34	public static void sort(int[] a) {
+35	// POSTCONDITION: a[0] <= a[1] <= ... <= a[a.length-1];
+36	int n = a.length;
+37	for (int i = n/2 - 1; i >= 0; i--) {	// step 1
+38	heapify(a, i, n);	// step 2
+39	}
+
+
+
+
+40	for (int i = n - 1; i > 0; i--) {	// step 4
+41	swap(a, 0, i);	// step 5
+42	heapify(a, 0, i);	// step 7
+43	}
+44	}
+45
+
+46	private static void	heapify(int[] a, int	i, int j)	{
+47	int ai = a[i];	//	step	1
+48	while (2*i+1 < j) {
+49	int k = 2*i + 1;
+50
+51	if (k + 1 < j && a[k+1] > a[k]) {
+++k; // a[k] is the larger child
+52	}
+53	if (ai >= a[k])	{
+54	break;		//	step	3
+55	}
+56	a[i] = a[k];		//	step	4
+57	i = k;		//	step	5
+58	}
+59
+60	a[i] = ai;
+}		//	step	7
+The sort() function first converts the array so that its underlying complete binary tree is transformed into a heap. This is done by applying the heapify() function to each nontrivial subtree. The nontrivial subtrees (i.e., those having more than one element) are the subtrees that are rooted above the leaf level. In the array, the leaves are stored at positions a[n/2] through a[n]. So the first for loop in the sort() function applies the heapify() function to elements a[n/2-1] back through a[0] (which is the root of the underlying tree). The result is an array whose corresponding tree has the heap property, illustrated in Figure 14.3.
+
+Figure 14.3 The natural mapping for the heap sort
+
+Now the main (second) for loop progresses through n-1 iterations. Each iteration does two things: it swaps the root element with element a[i], and then it applies the heapify() function to the subtree of elements a[0..i). That subtree consists of the part of the array that is still unsorted. Before the swap() executes on each iteration, the subarray a[0..i] has the heap property, so a[i] is the largest element in that subarray. That means that the swap() puts element a[i] in its correct position.
+The first seven iterations of the main for loop have the effect shown by the seven pictures in Figure
+14.4 on page 268. The array (and its corresponding imaginary binary tree) is partitioned into two parts: The first part is the subarray a[0..i) that has the heap property, and the second part is the remaining a[i..n) whose elements are in their correct positions. The second part is shaded in each of the seven pictures in Figure 14.4 on page 268. Each iteration of the main for loop decrements the size of the first part and increments the size of the second part. So when the loop has finished, the first part is empty and the second (sorted) part constitutes the entire array. This analysis verifies the following theorem.
+
+
+
+
+Figure 14.4 Tracing the heap sort
+
+Theorem 14.15 The heap sort is correct.
+See Problem 14.31 on page 277.
+
+Theorem 14.16 The heap sort runs in O(n lgn) time.
+Each call to the heapify() function takes at most lg n steps because it iterates only along a path from the current element down to a leaf. The longest such path for a complete binary tree of n elements is lg n. The heapify() function is called n/2 times in the first for loop and n –1 times in the second for loop. That comes to less than (3n/2) lg n, which is proportional to n lg n.
+If we regard a sorting algorithm as a stream process wherein elements stream into an array in random order and then stream out in sorted order, then the heap sort can be regarded as an efficient mean between the extremes of the selection sort and the insertion sort. The selection sort does all its sorting during the removal stage of the process, having stored the elements in the unsorted order in which they arrived. The insertion sort does all its sorting during the insertion stage of the process so that the elements can stream out of the array in the sorted order in which they were stored. But the heap sort does a partial sorting by inserting the elements into a heap and then finishes the sorting as the elements are removed from the heap. The payoff from this mean between the extremes is greater efficiency: O(n lg n) instead of O(n2).
+
+THE SPEED LIMIT FOR COMPARISON SORTS
+
+Theorem 14.17 No sorting algorithm that rearranges the array by comparing its elements can have a worst-case complexity function better than O(n lg n).
+Consider the decision tree that covers all possible outcomes of the algorithm on an array of size n. Since the algorithm rearranges the array by comparing its elements, each node in the decision tree represents a condition of the form (a[i] < a[j]). Each such condition has two possible outcomes (true or false), so the decision tree is a binary tree. And since the tree must cover all possible arrangements, it must have at least n! leaves. Therefore, by Corollary 11.3 on page 203, the height of the decision tree must be at least lg(n!). In the worst case, the number of comparisons that the algorithm makes is the same as the height of the decision tree. Therefore, the algorithm’s worst-case complexity function must be O(lg(n!)).
+Now by Stirling’s Formula (outlined on page 325),
+
+n! 
+so
+
+
+
+
+
+-n-n 
+
+-n-n
+ e
+
+n
+
+logn!  log
+
+ e
+
+  logn 
+
+= n log n
+
+(Here, “log” means the binary logarithm log2.) Therefore, the algorithm’s worst-case complexity function must be O(n log n).
+
+Theorem 14.17 applies only to comparison sorts. A comparison sort is an algorithm that sorts elements by comparing their values and then changes their relative positions according to the outcomes of those comparisons. All the sorting algorithms outlined previously are comparison sorts. In contrast, the following sorting algorithms are not comparisons sorts.
+
+
+
+THE RADIX SORT
+
+The radix sort assumes that the sequence’s element type is a lexicographic array of constant size, that is, either a character string type or an integer type. Let r be the array element’s radix (e.g., r = 26 for ASCII character strings, r = 10 for decimal integers, r = 2 for bit strings), and let w be the constant width of the lexicographic array. For example, for U.S. Social Security numbers, d = 10 and w = 9.
+EXAMPLE 14.11 Sorting Books by Their ISBNs
+Every book published since the 1970s has been assigned a unique international standard book number (ISBN). These are usually printed at the bottom of the back cover of the book. For example, the ISBN for this book is 0071476989. (ISBNs are usually hyphenated, like this: 0-07-147698-9, to distinguish the four separate fields that make up the code.) The last digit is a check digit, computed from the other nine digits. Since it can be any of the 10 numeric digits or the letter X, we have that the radix r = 11, while the number of digits d = 10.
+Algorithm 14.10 The Radix Sort
+(Precondition: s = {s0 . . . sn–1} is a sequence of n integers or character strings with radix r and width w.)
+(Postcondition: The sequence s is sorted numerically or lexicographically.)
+1.	Repeat step 2 for d = 0 up to w – 1.
+2.	Apply a stable sorting algorithm to the sequence s, sorting only on digit number d.
+A sorting algorithm is said to be stable if it preserves the relative order of elements with equal keys. For example, the insertion sort is stable, but the heap sort is not.
+EXAMPLE 14.12 Sorting ISBNs with the radix sort
+Figure 14.5 shows a sequence of 12 ISBNs and the first four iterations of the radix sort applied to it.
+
+
+Figure 14.5 Tracing the radix sort
+
+Note how the stability is needed to conserve the work done by previous iterations. For example, after the first iteration, 8838650527 precedes 0830636528 because 7 < 8. Both of these keys have the same value 2 in their second least significant digit (digit number d = 1). So on the second iteration, which sorts only on digit number 1, these two keys evaluate as being equal. But they should retain their previous relative order because 27 < 28. Stability guarantees that they do.
+The columns that have been processed are shaded. So after the third iteration, the right-most 3-digit subsequences are sorted: 109 < 13X < 373 < 453. (Note that X stands for the value 10. So 13X numeri- cally means 130 + 10 = 140.)
+
+
+
+EXAMPLE 14.13 The Radix Sort
+This method assumes that the constants RADIX has WIDTH have been defined. For example, for arrays of ints:
+1	public static void sort(int[] a) {
+2	// POSTCONDITION: a[0] <= a[1] <= ... <= a[a.length-1];
+3	for (int d = 0; d < WIDTH; d++) { // step 1
+4	sort(a, d);	// step 2
+5	}
+6	}
+7
+8	private static void sort(int[] a, int d) {
+9	// POSTCONDITION: a[] is sorted stably on digit d;
+10	int n = a.length;
+11	int[] c = new int[RADIX];
+12	for (int ai : a) {
+13	++c[digit(d,ai)]; // tally the values in a[]
+14	}
+15	for (int j = 1; j < RADIX; j++) {
+16	c[j] += c[j-1]; // c[j] == num elts in a[] that are <= j
+17	}
+18	int[] tmp = new int[n];
+19	for (int i = n - 1; i >= 0; i--) {
+20	tmp[--c[digit(d, a[i])]] = a[i];
+21	}
+22	for (int i = 0; i < n; i++)
+23	a[i] = tmp[i];
+24	}
+25
+26	private static int digit(int d, int x) {
+27	// returns digit number d of integer x
+28	// e.g., digit(2, 1234567890) returns 8;
+29	return x/(int)Math.pow(10,d)%RADIX;
+30	}
+
+
+The secondary sorting method at line 8 is called a counting sort or tally sort.
+
+Theorem 14.18 The radix sort runs in O(n) time.
+The algorithm has WIDTH iterations and processes all n elements on each iteration three times.
+Thus, the running time is proportional to WIDTH*n and is a constant.
+Although O(n) is theoretically better than O(n lg n), the radix sort is rarely faster than the O(n lgn) sorting algorithms (merge sort, quick sort, and heap sort). That is because it has a lot of overhead extracting digits and copying arrays.
+THE BUCKET SORT
+The bucket sort is another distribution sort. It distributes the elements into “buckets” accord- ing to some coarse grain criterion and then applies another sorting algorithm to each bucket. It is similar to the quick sort in that all the elements in bucket i are greater than or equal to all the elements in bucket i – 1 and less than or equal to all the elements in bucket i+1. Whereas quick sort partitions the sequence into two buckets, the bucket sort partitions the sequence into n buckets.
+
+
+
+Algorithm 14.11 The Bucket Sort
+(Precondition: s = {s0 . . . sn–1} is a sequence of n ordinal values with known minimum value min and maximum value max.)
+(Postcondition: the sequence s is sorted.)
+1.	Initialize an array of n buckets (collections).
+2.	Repeat step 3 for each si in the sequence.
+3.	Insert si into bucket j, where j =  rn   , r = (si – min)/(max + 1 – min).
+4.	Sort each bucket.
+5.	Repeat step 6 for j from 0 to n – 1.
+6.	Add the elements of bucket j sequentially back into s.
+EXAMPLE 14.14 Sorting U.S. Social Security Numbers with the Bucket Sort.
+Suppose you have 1000 nine-digit identification numbers. Set up 1000 arrays of type int and then distribute the numbers using the formula j =  rn   , r = (si – min)/(max + 1 – min) = (si – 0)/(109 + 1 – 0)
+ si/109. So, for example, the identification number 666666666 would be inserted into bucket number j where j =  rn  =  (666666666/109)(103)   =  666.666666  = 666. Similarly, identification number 123456789 would be inserted into bucket number 123, and identification number 666543210 would be inserted into bucket 666. (See Figure 14.6.)
+Then each bucket would be sorted. Note that the number of elements in each bucket will average 1, so the choice of sorting algorithm will not affect the running time.
+Finally, the elements are copied back into s, starting with bucket number 0.
+
+Figure 14.6 Tracing the bucket sort
+
+
+
+EXAMPLE 14.15 The Bucket Sort
+1	public static void sort(int[] a) {
+2	// POSTCONDITION: a[0] <= a[1] <= ... <= a[a.length-1];
+3	int min = min(a);
+4	int max = max(a);
+5	int n = a.length;
+6	Bucket[] bucket = new Bucket[n];	// step 1
+7	for (int j=0; j<n; j++) {
+8	bucket[j] = new Bucket();
+9	}
+10	for (int i=0; i<n; i++) {	// step 2
+11	int j = n*(a[i] - min)/(max + 1 - min);
+12	bucket[j].add(a[i]);	// step 3
+13	}
+14	int i=0;
+15	for (int j=0; j<n; j++) {
+16	Bucket bj=bucket[j];
+17	bj.sort();	// step 4
+18	for (int k=0; k<bj.size(); k++) {	// step 5
+19	a[i++] = bj.get(k);
+20	}
+21	}
+22	}
+23
+24	private static int min(int[] a) {
+25	int min = a[0];
+26	for (int ai: a) {
+27	if (ai < min) {
+28	min = ai;
+29	}
+30	}
+31	return min;
+32	}
+33
+34	private static int max(int[] a) {
+35	int max = a[0];
+36	for (int ai: a) {
+37	if (ai > max) {
+38	max = ai;
+39	}
+40	}
+41	return max;
+42	}
+This program requires the implementation of this interface:
+public interface Bucket {
+public void add(int x);	// appends x to end of bucket public int get(int k);	// returns element k from bucket public int size();	// returns the number of elements
+}
+For example:
+43	private static class Bucket extends java.util.ArrayList<Integer> {
+44	void sort() {
+45	java.util.Arrays.sort(this.toArray());
+46	}
+47	}
+
+
+
+Theorem 14.19 The bucket sort runs in O(n) time.
+The algorithm has three parallel loops, each iterating n times. The last loop has an inner loop, but it averages only one iteration. The minimum() and maximum() methods also require n steps each. Hence the number of steps executed is proportional to 5n.
+Like the radix sort, the O(n) bucket sort is in practice much slower than the O(n lg n) sorting algorithms because of the substantial overhead costs.
+
+Review Questions
+
+14.1	Why is the bubble sort so slow?
+14.2	The bubble sort makes n(n – 1)/2 comparisons to sort n elements. How does it follow that its complexity function is O(n2)?
+14.3	Why are the O(n) sorting algorithms (radix sort and bucket sort) slower than the O(n lg n) sorting algorithms (merge sort, quick sort, and heap sort)?
+14.4	The merge sort applies the general method, known as divide and conquer, to sort an array. It divides the array into pieces and applies itself recursively to each piece. What other sorting algorithm(s) use this method?
+14.5	Which sorting algorithms work as well on linked lists as on arrays?
+14.6	Which sorting algorithms have a different worst case complexity than their average case?
+14.7	Which sorting algorithms have a different best case complexity than their average case?
+14.8	Why is the nonrecursive version of a recursive sorting algorithm usually more efficient?
+14.9	How is the quick sort like the merge sort?
+14.10	Under what circumstances would the merge sort be preferred over the other two O(n lg n) sorting algorithms?
+14.11	Under what circumstances is the quick sort like the selection sort?
+14.12	Under what circumstances would the quick sort be preferred over the other two O(n lg n) sorting algorithms?
+14.13	How is the heap sort similar to the selection sort and the insertion sort?
+14.14	Which algorithm does the Java API use to implement its java.util.Arrays.sort()
+methods?
+14.15	A sorting algorithm is said to be stable if it preserves the order of equal elements. Which of the sorting algorithms are not stable?
+14.16	Which of the nine sorting algorithms outlined in this chapter require extra array space?
+14.17	Which of the nine sorting algorithms outlined in this chapter would work best on an external file of records?
+14.18	The merge sort is parallelizable. This means that parts of it can be performed simultaneously, independent of each other, provided that the computer has multiple processors that can run in parallel. This works for the merge sort because several different parts of the array can be sub- divided or merged independently of other parts. Which of the other sorting algorithms described in this chapter are parallelizable?
+
+
+
+14.19	Imagine a Web site that has a Java applet for each sorting algorithm that shows how the algo- rithm works by displaying an animation of a test run on an array a[] of 256 random numbers in the range 0.0 to 1.0. The animation shows on each iteration of the algorithm’s main loop a two-dimensional plot of 256 points (x, y), one for each element in the array, where x = i+1 and y = a[i]. Each plot in Figure 14.7 shows the progress halfway through the sort for one of the following six algorithms:
+selection sort insertion sort merge sort quick sort heap sort radix sort
+Match each plot with the sorting algorithm that produced it:
+
+
+Figure 14.7 Sorting algorithms in motion
+
+Problems
+
+14.1	If an O(n2) algorithm (e.g., the bubble sort, the selection sort, or the insertion sort) takes 3.1 milliseconds to run on an array of 200 elements, how long would you expect it to take to run on a similar array of:
+a.	400 elements?
+b.	40,000 elements?
+14.2	If an O(n lg n) algorithm (e.g., the merge sort, the quick sort, or the heap sort) takes 3.1 milli- seconds to run on an array of 200 elements, how long would you expect it to take to run on a similar array of 40,000 elements?
+14.3	The insertion sort runs in linear time on an array that is already sorted. How does it do on an array that is sorted in reverse order?
+
+
+
+14.4	How does the bubble sort perform on:
+a.	An array that is already sorted?
+b.	An array that is sorted in reverse order?
+14.5	How does the selection sort perform on:
+a.	An array that is already sorted?
+b.	An array that is sorted in reverse order?
+14.6	How does the merge sort perform on:
+a.	An array that is already sorted?
+b.	An array that is sorted in reverse order?
+14.7	How does the quick sort perform on:
+a.	An array that is already sorted?
+b.	An array that is sorted in reverse order?
+14.8	How does the heap sort perform on:
+a.	An array that is already sorted?
+b.	An array that is sorted in reverse order?
+14.9	The bubble sort, the selection sort, and the insertion sort are all O(n2) algorithms. Which is the fastest and which is the slowest among them?
+14.10	The merge sort, the quick sort, and the heap sort are all O(n lg n) algorithms. Which is the fastest and which is the slowest among them?
+14.11	Trace by hand the sorting of this array
+int a[] = { 44, 88, 55, 99, 66, 33, 22, 88, 77 }
+by each of the following algorithms:
+a.	The quick sort
+b.	The heap sort
+c.	The bubble sort
+d.	The selection sort
+e.	The insertion sort
+f.	The merge sort
+14.12	Modify the bubble sort so that it sorts the array in descending order.
+14.13	Modify the bubble sort so that it is “smart” enough to terminate as soon as the array is sorted.
+14.14	Prove Theorem 14.1 on page 257.
+14.15	Prove Theorem 14.2 on page 257.
+14.16	The shaker sort is the same as the bubble sort except that it alternates “bubbling” up and down the array. Implement the shaker sort, and determine whether it is more efficient than the straight insertion sort.
+14.17	Modify the selection sort (Algorithm 14.2 on page 257) so that it uses the smallest element of
+{si . . . sn–1} in step 2.
+14.18	Rewrite the selection sort recursively.
+14.19	Prove Theorem 14.3 on page 258.
+14.20	Prove Theorem 14.4 on page 258.
+14.21	Modify the insertion sort so that it sorts the array indirectly. This requires a separate index array whose values are the indexes of the actual data elements. The indirect sort rearranges the index array, leaving the data array unchanged.
+
+
+
+14.22	Rewrite the insertion sort recursively.
+14.23	Prove Theorem 14.5 on page 259.
+14.24	Prove Theorem 14.6 on page 259.
+14.25	Prove Theorem 14.7 on page 259.
+14.26	Modify the quick sort so that it selects its pivot as the last element instead of the first element of the subsequence.
+14.27	Modify the quick sort so that it selects its pivot as the median of the first, middle, and last ele- ments.
+14.28	Modify the quick sort so that it reverts to the insertion sort when the array size is below 8.
+14.29	Since the heap sort runs in O(n lgn) time, why isn’t it always preferred over the quick sort, which runs in O(n2) in the worst case?
+14.30	Since the heap sort runs in O(n lgn) time and requires no extra array space, why isn’t it always preferred over the merge sort, which requires duplicate array space?
+14.31	Prove Theorem 14.15 on page 269.
+14.32	Here is the Las Vegas sort, as applied to sorting a deck of cards:
+1.	Randomly shuffle the cards.
+2.	If the deck is not sorted, repeat step 1.
+Derive the complexity function for this sorting algorithm.
+
+Answers to Review Questions
+
+14.1	The bubble sort is so slow because it operates only locally. Each element moves only one position at a time. For example, the element 99 in Example 14.3 on page 256 is moved by six separate calls to the swap() function to be put into its correct position at a[8].
+14.2	The run time is nearly proportional to the number of comparisons made. That number is n(n – 1)/2. For every positive integer n, n(n – 1)/2 < n2, so n(n – 1)/2 = O(n2). Thus, O(n2) is the complexity function.
+14.3	The O(n) sorting algorithms (radix sort and bucket sort) are slower than the O(n lg n) sorting algo- rithms (merge sort, quick sort, and heap sort) because, although their running time is proportional to n, the constant of proportionality is large because of large overhead. For both the radix sort and the bucket sort, each iteration requires copying all the elements into a list of queues or arrays and then copying them back.
+14.4	The merge sort, quick sort, and bucket sort all use the divide-and-conquer strategy.
+14.5	The bubble sort, selection sort, insertion sort, merge sort, and quick sort work as well on linked lists as on arrays.
+14.6	The quick sort and bucket sort are significantly slower in the worst case.
+14.7	The insertion sort, shell sort, and radix sort are significantly faster in the best case.
+14.8	Recursion carries the overhead of many recursive method invocations.
+14.9	The quick sort implements the divide-and-conquer strategy: first it performs its O(lgn) partitioning of the sequence, and then it recursively sorts each of the two pieces independently. The merge sort imple- ments the divide-and-conquer strategy but in the reverse order: It makes its two recursive calls first before performing its O(lgn) merge. Both algorithms do O(n) amount of work O(lg n) times thus obtaining O(n lgn) complexity.
+14.10	The merge sort is best for sorting linked lists and external files.
+14.11	The quick sort reverts to the selection sort in the worst case, when the sequence is already sorted.
+
+
+
+14.12	The quick sort is best for sorting large arrays of primitive types.
+14.13	The selection sort can be seen as a sort-on-output process: Insert the elements into an array as they are given, and then repeatedly select out the next largest element. The insertion sort can be seen as a sort- on-input process: Repeatedly insert each element into its correct ordered position in an array, and then remove them in their array order. So the selection sort inserts the elements into the array in O(n) time and removes them in O(n 2), while the insertion sort inserts the elements into the array in O(n2) time and removes them in O(n). Both result in an O(n2) algorithm.
+The heap sort can be seen as a partial-sort-on-input-and-partial-sort-on-output process: Insert the elements into an array maintaining the (partially sorted) heap property, and then repeatedly select the first (which is the smallest) element and restore the heap property. Both the insertion process and the removal process have the same O(n lgn) running time, resulting in a total O(n lgn) running time.
+14.14	The Java API uses the merge sort to implement its Arrays.sort() methods for arrays of objects, and it uses the quick sort to implement its Arrays.sort() methods for arrays of primitive types.
+14.15	The shell sort, quick sort, and heap sort are unstable.
+14.16	The merge sort, radix sort, and bucket sort require extra array storage.
+14.17	The bubble sort, selection sort, insertion sort, merge sort, and quick sort work as well on external files of records.
+14.18	The shell sort, merge sort, quick sort, and bucket sort all would run significantly faster on a parallel computer.
+14.19	Matching the algorithms with their graphical output is shown in Figure 14.8.
+
+Figure 14.8 Sorting algorithms in motion
+
+Solutions to Problems
+
+14.1	The O(n2) algorithm should take:
+a.	12.4 milliseconds (4 times as long) to run on the 400-element array.
+b.	124 seconds (40,000 times as long) to run on the 40,000-element array. That’s about 2 minutes. This answer can be computed algebraically as follows. The running time t is proportional to n2, so there is some constant c for which t = c·n2. If it takes t = 3.1 milliseconds to sort n = 200 ele- ments, then (3.1 milliseconds) = c·(200 elements)2, so c = (3.1 milliseconds)/(200 elements)2 = 0.0000775 milliseconds/element2. Then, for n = 40,000, t = c·n2 = (0.0000775 milliseconds/ element2)·(40,000 elements)2 = 124,000 milliseconds = 124 seconds.
+14.2	The O(n lg n) algorithm should take 1.24 seconds (400 times as long) to run on the 40,000-element array. This answer can be computed algebraically. The running time t is proportional to nlg n, so there
+
+
+
+is some constant c for which t = c·nlg n. If it takes t = 3.1 milliseconds to sort n = 200 elements, then (3.1) = c·(200) lg(200), so c = (3.1 milliseconds)/(200·lg(200)) = 0.0155/lg(200). Then, for n = 40,000, t = c·n lg n = (0.0155/lg(200))( 40,000·lg(40,000)) = 620·(lg(40,000)/lg(200)). Now 40,000 = 2002, so
+lg(40,000) = lg(2002) = 2· lg 200. Thus, lg(40,000)/lg(200) = 2, so t = 620·2 milliseconds = 1240 milli- seconds = 1.24 s.
+14.3	The insertion sort has its worst performance on an array that is sorted in reverse order, because each new element inserted requires all of the elements on its left to be shifted one position to the right.
+14.4	The bubble sort, as implemented in Algorithm 14.1 on page 257, is insensitive to input. That means that it will execute the same number n(n – 1)/2 of comparisons regardless of the original order of the elements in the array. So it doesn’t matter whether the array is already sorted or whether it is sorted in reverse order; it is still very slow.
+14.5	The selection sort is also insensitive to input: It takes about the same amount of time to sort arrays of the same size, regardless of their initial order.
+14.6	The merge sort is also insensitive to input: It takes about the same amount of time to sort arrays of the same size, regardless of their initial order.
+14.7	The quick sort is quite sensitive to input. As implemented in Algorithm 14.6 on page 263, the quick sort will degrade into an O(n2) algorithm in the special cases where the array is initially sorted in either order. That is because the pivot element will always be an extreme value within its subarray, so the partitioning splits the subarray very unevenly, thereby requiring n steps instead of lg n.
+14.8	The heap sort is a little sensitive to input, but not much. The heapify() function may require fewer than lg n iterations.
+14.9	The bubble sort is slower than the selection sort, and the insertion sort (in most cases) is a little faster.
+14.10	The merge sort is slower than the heap sort, and the quick sort (in most cases) is faster.
+14.11	a.  Trace of the quick sort:
+
+a[0]	a[1]	a[2]	a[3]	a[4]	a[5]	a[6]	a[7]	a[8]
+44	88	55	99	66	33	22	88	77
+22	33	44			55	88
+			77					99
+			55		77
+
+b.	Trace of the heap sort:
+
+a[0]	a[1]	a[2]	a[3]	a[4]	a[5]	a[6]	a[7]	a[8]
+44	88	55	99	66	33	22	88	77
+	99		88
+99	44
+	88						44
+77								99
+88			77
+44							88
+88	77		44
+22						88
+77	66			22
+33					77
+66	44		33
+22				66
+55		22
+33			55
+44	22
+33		44
+22	33
+
+
+
+c.	Trace of the bubble sort:
+
+a[0]	a[1]	a[2]	a[3]	a[4]	a[5]	a[6]	a[7]	a[8]
+44	88	55	99	66	33	22	88	77
+	55	88
+			66	99
+				33	99
+					22	99
+						88	99
+							77	99
+		66	88
+			33	88
+				22	88
+						77	88
+					77	88
+		33	66
+			22	66
+	33	55
+		22	55
+33	44
+	22	44
+22	33
+
+d.	Trace of the selection sort:
+
+a[0]	a[1]	a[2]	a[3]	a[4]	a[5]	a[6]	a[7]	a[8]
+44	88	55	99	66	33	22	88	77
+22						44
+	33				88
+		44				55
+			55			99
+					77			88
+						88		99
+
+e.	Trace of the insertion sort:
+
+a[0]	a[1]	a[2]	a[3]	a[4]	a[5]	a[6]	a[7]	a[8]
+44	88	55	99	66	33	22	88	77
+	55	88
+		66	88	99
+33	44	55	66	88	99
+22	33	44	55	66	88	99
+						88	99
+					77	88	88	99
+
+f.	Trace of the merge sort:
+
+a[0]	a[1]	a[2]	a[3]	a[4]	a[5]	a[6]	a[7]	a[8]
+44
+44	88
+55	55
+77	99
+99	66	33	22	88	77
+				33	66
+
+
+22
+
+33
+
+44
+
+55
+22
+66
+33
+77
+66
+88	77
+77
+88	88
+88
+99
+
+
+
+14.12	public static void sort(int[] a) {
+for (int i = a.length-1; i > 0; i--) { for (int j = 0; j < i; j++) {
+if (a[j] > a[j+1]) {
+swap(a, j, j+1);
+}
+}
+}
+}
+14.13	public static void sort(int[] a) {
+boolean sorted=false; int i = a.length-1;
+while (i > 0 && !sorted) {
+for (int j = 0; j < i; j++) { sorted = true;
+if (a[j] > a[j+1]) {
+swap(a, j, j+1); sorted = false;
+}
+}
+--i;
+}
+}
+14.14	The loop invariant can be used to prove that the bubble sort does indeed sort the array. After the first iteration of the main i loop, the largest element must have moved to the last position. Wherever it began, it had to be moved step by step all the way to the right, because on each comparison the larger element is moved right. For the same reason, the second largest element must have been moved to the second-from-last position in the second iteration of the main i loop. So the two largest elements are in the correct locations. This reasoning verifies that the loop invariant is true at the end of every iteration of the main i loop. But then, after the last iteration, the n-1 largest elements must be in their correct locations. That forces the nth largest (i.e., the smallest) element also to be in its correct location, so the array must be sorted.
+14.15	The complexity function O(n2) means that, for large values of n, the number of loop iterations tends to be proportional to n2. That means that, if one large array is twice the size of another, it should take about four times as long to sort. The inner j loop iterates n – 1 times on the first iteration of the outside i loop, n – 2 times on the second iteration of the i loop, n – 3 times on the third iteration of the i loop, and so on. For example, when n = 7, there are six comparisons made on the first iteration of the i loop, five comparisons made on the second iteration of the i loop, four comparisons made on the third iter- ation of the i loop, and so forth, so the total number of comparisons is 6 + 5 + 4 + 3 + 2 + 1 = 21. In general, the total number of comparisons will be (n – 1) + (n – 2) + (n – 3) + · · · + 3 + 2 + 1. This sum is n(n – 1)/2. (See Theorem A.7 on page 323.) For large values of n, that expression is nearly n2/2 which is proportional to n2.
+14.16	public static void sort(int[] a) {
+boolean sorted=false;
+for (int i = a.length; i > 0; i -= 2) { for (int j = 1; j < i; j++) {
+if (a[j-1] > a[j]) {
+swap(a,j-1,j);
+}
+}
+for (int j = i-2; j > 0; j--) {
+if (a[j-1] > a[j]) {
+swap(a, j-1, j);
+}
+}
+}
+}
+
+
+
+
+14.17	public static void sort(int[] a) {
+for (int i = 0; i < a.length-1; i++) { int j=i;
+for (int k = i+1; k < a.length; k++) { if (a[k] < a[j]) {
+j = k;
+}
+}
+swap(a, i, j);
+}
+}
+14.18	public static void sort(int[] a) { sort(a, a.length);
+}
+
+private static void sort(int[] a, int n) { if (n < 2) {
+return;
+}
+int j = 0;
+for (int k = 1; k < n; k++) { if (a[k] > a[j]) {
+j = k;
+}
+}
+swap(a, n-1, j);
+sort(a, n-1);
+}
+14.19	The last loop invariant proves correctness. So, like the proof for the bubble sort, we need only verify the loop invariants.
+On the first iteration of the main loop (step 1), a[i] is the last element in the array, so the index k of the inner loop runs through every element after a[0]. The value of the index j begins at 0 and then changes each time k finds a larger element. Since j is always reset to the index of the larger element, a[j] will be the largest element of the array when the inner loop finishes. This verifies the first loop invariant. On each successive iteration of the outer loop, the index k runs through the remaining unsorted segment of the array, so for the same reason, a[j] will be the largest element of that remaining segment when the inner loop finishes. This verifies that the first loop invariant is true on every iteration of the outer loop.
+Since swap(a,i,j) simply interchanges a[i] with a[j], the second loop invariant follows from the first.
+The third loop invariant follows from the second and by mathematical induction. During the first iteration of the main loop, the inner loop finds a[j] to be the largest element in the array. The swap(a,i,j) puts that largest element in the last location a[i], so a[i] must be >= all the a[j]. Prior to the ith iteration of the main loop, we have by the inductive hypothesis that the subarray a[i+1..n) is sorted and all the values in the subarray a[0..i] are smaller than a[i+1]. Then after the ith iteration, a[i] is one of those smaller elements, so a[i]  a[i+1]  ...  a[n-1].
+14.20	Again, the proof is essentially the same as that for the corresponding theorem for the bubble sort. On the first iteration of the outer i loop, the inner j loop iterates n – 1 times. On the second, it iterates n – 2 times. This progression continues, for a total of (n – 1) + (n – 2) + · · · + 2 + 1 = n(n – 1)/2.
+14.21	public static void sort(int[] a, int[] ndx) { for (int i = 1; i < a.length; i++) {
+int ndxi = ndx[i], j;
+for (j = i; j > 0 && a[ndx[j-1]] > a[ndxi]; j--) { ndx[j] = ndx[j-1];
+}
+ndx[j] = ndxi;
+}
+}
+
+
+
+
+14.22	public static void sort(int[] a) { sort(a, a.length);
+}
+
+public static void sort(int[] a, int n) { if (n < 2) {
+return;
+}
+sort(a, n-1);
+int temp = a[n-1], j;
+for (j = n-1; j > 0 && a[j-1] > temp; j--) { a[j] = a[j-1];
+}
+a[j] = temp;
+}
+14.23	On the first iteration of the main loop, a[1] is compared with a[0] and interchanged if necessary. So a[0]  a[1] after the first iteration. If we assume that the loop invariant is true prior to some kth iter- ation, then it must also be true after that iteration because during it a[k] is inserted between the ele- ments that are less than or equal to it and those that are greater. It follows by mathematical induction that the loop invariant is true for all k.
+14.24	The proof is similar to that for the corresponding theorems for the bubble sort and the selection sort. On the first iteration of the outer i loop, the inner j loop iterates once. On the second, it iterates once or twice, depending upon whether a[1] > a[2]. On the third iteration, the inner j loop iterates at most three times, again depending upon how many of the elements on the left of a[3] are greater than a[3]. This pattern continues, so that on the kth iteration of the outer loop, the inner loop iterates at most k times. Thus the maximum total number of iterations is 1 + 2 + · · · + (n – 1) = n(n – 1)/2.
+14.25	In this case, the inner loop will iterate only once for each iteration of the outer loop. So the total num- ber of iterations of the inner loop is: 1 + 1 + 1 + · · · +1 + 1 = n – 1.
+14.26	For the quick sort pivoting on the last element, the only changes needed are in the partition()
+method:
+private static int partition(int[] a, int p, int q) { int pivot = a[q-1], i = p-1, j = q-1;
+while (i < j) {
+while (i < j && a[++i] <= pivot) ; // empty loop if (i < j) {
+a[j] = a[i];
+}
+while (j > i && a[--j] >= pivot) ; // empty loop if (j > i) {
+a[i] = a[j];
+}
+}
+a[j] = pivot; return j;
+}
+14.27	For the quick sort pivoting on median of three elements, the only changes needed are in the
+partition() method:
+private static int partition(int[] a, int p, int q) { int m = (p + q)/2;
+m = indexOfMedian(a, p, m, q-1); swap(a, p, m);
+// The rest is the same as lines 20-32 in Example 14.9 on page 264
+}
+
+
+
+This requires a method for locating the index of three array elements:
+private static int indexOfMedian(int[] a, int i, int j, int k) {
+// Returns the index of the median of {a[i], a[j], a[k]} if (a[i] <= a[j] && a[j] <= a[k]) return j;
+if (a[i] <= a[k] && a[k] <= a[j]) return k;
+if (a[j] <= a[i] && a[i] <= a[k]) return i;
+if (a[j] <= a[k] && a[k] <= a[i]) return k;
+if (a[k] <= a[i] && a[i] <= a[j]) return i; return j;
+}
+14.28	For the quick sort with reversion to the insertion sort on arrays of size < 8, the only changes needed are in the sort() method:
+private static void sort(int[] a, int p, int q) { if (q - p < 2) {
+return;
+}
+if (q - p < 8) { insertionSort(a, p, q); return;
+}
+int m = partition(a, p, q); sort(a, p, m);	// steps 2 & 3 sort(a, m+1, q);		// step 4
+}
+This requires a generalization of the insertion sort:
+public static void insertionSort(int[] a, int p, int q) { for (int i = p+1; i < q; i++) {
+int ai = a[i], j;
+for (j = i; j > 0 && a[j-1] > ai; j--) { a[j] = a[j-1];
+}
+a[j] = ai;
+}
+}
+14.29	The heap sort is not always preferred over the quick sort because it is slower in the average case.
+14.30	The heap sort is not always preferred over the merge sort because it is not stable.
+14.31	The postcondition of heapify (Algorithm 14.9 on page 266) establishes the loop invariant in step 3. That guarantees that the root s0 is the maximum element of the subsequence. Step 5 inserts that maxi- mum at the end of the subsequence. So when the loop at step 4 is finished, the sequence will be sorted. The heapify algorithm restores the heap property to the complete segment ss by applying the heapifyDown() method from its root.
+14.32	The Las Vegas sort has complexity O(nn).
+There are n! different permutations of a deck of n cards. Shuffling them is equivalent to selecting one permutation at random. Only one of the n! permutations leaves the cards in order. So the expected number of random shuffles required before the correct one occurs is n!/2. Then each permutation takes n – 1 comparisons to see if it is the correct one. So the total complexity is O(n n!/2). By Stirling’s Formula (page 325), O(n n!/2) = O( n!) = O(2n).

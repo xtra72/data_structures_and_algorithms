@@ -65,11 +65,11 @@ public class ArrayQueue3 implements Queue {
         stringBuilder.append("[");
         if (head != tail) {
             int ptr = head;
-            stringBuilder.append(String.format("%2d", array[ptr]));
+            stringBuilder.append(String.format("%d", array[ptr]));
             ptr = (ptr + 1) % array.length;
 
             while (ptr != tail) {
-                stringBuilder.append(String.format(", %2d", array[ptr]));
+                stringBuilder.append(String.format(", %d", array[ptr]));
                 ptr = (ptr + 1) % array.length;
             }
         }
@@ -81,17 +81,22 @@ public class ArrayQueue3 implements Queue {
         ArrayQueue2 queue2 = new ArrayQueue2(2);
         ArrayQueue3 queue3 = new ArrayQueue3(2);
 
+        System.out.printf("%10s | %10s | %10s | %10s | %10s | %10s%n",
+                "queue2", "Capacity", "Elements", "queue3", "Capacity", "Elements");
         for (int i = 0; i < 10; i++) {
-            System.out.printf("queue2[%2d] : %5s - queue3[%2d] : %5s%n",
-                    queue2.getCapacity(), queue2.toString(), queue3.getCapacity(), queue3.toString());
+            System.out.printf("%10s | %10d | %10s | %10s | %10d | %10s%n",
+                    "queue2", queue2.getCapacity(), queue2.toString(),
+                    "queue3", queue3.getCapacity(), queue3.toString());
             queue2.add(i);
             queue3.add(i);
-            System.out.printf("queue2[%2d] : %5s - queue3[%2d] : %5s%n",
-                    queue2.getCapacity(), queue2.toString(), queue3.getCapacity(), queue3.toString());
+            System.out.printf("%10s | %10d | %10s | %10s | %10d | %10s%n",
+                    "queue2", queue2.getCapacity(), queue2.toString(),
+                    "queue3", queue3.getCapacity(), queue3.toString());
             queue2.remove();
             queue3.remove();
         }
-        System.out.printf("queue2[%2d] : %5s - queue3[%2d] : %5s%n",
-                queue2.getCapacity(), queue2.toString(), queue3.getCapacity(), queue3.toString());
+        System.out.printf("%10s | %10d | %10s | %10s | %10d | %10s%n",
+                "queue2", queue2.getCapacity(), queue2.toString(),
+                "queue3", queue3.getCapacity(), queue3.toString());
     }
 }

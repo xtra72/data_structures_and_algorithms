@@ -1,12 +1,21 @@
 package example.ch6;
 
-public class LinkedQueue implements Queue {
+public class LinkedQueue2 implements Queue {
     Node head;
     Node tail;
+    int size = 0;
 
-    public LinkedQueue() {
+    public LinkedQueue2() {
         tail = new Node(0);
         head = tail;
+    }
+
+    public int size() {
+        return size;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
     }
 
     @Override
@@ -15,6 +24,7 @@ public class LinkedQueue implements Queue {
         tail.setNext(new Node(0));
 
         tail = tail.getNext();
+        ++size;
     }
 
     @Override
@@ -35,6 +45,7 @@ public class LinkedQueue implements Queue {
         Node firstNode = head;
         head = head.getNext();
         firstNode.setNext(null);
+        size--;
 
         return firstNode.getData();
     }

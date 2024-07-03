@@ -60,10 +60,10 @@ public class ArrayQueue2 implements Queue {
 
         stringBuilder.append("[");
         if (head != tail) {
-            stringBuilder.append(String.format("%2d", array[head]));
+            stringBuilder.append(String.format("%d", array[head]));
 
             for (int i = head + 1; i < tail; i++) {
-                stringBuilder.append(String.format(", %2d", array[i]));
+                stringBuilder.append(String.format(", %d", array[i]));
             }
         }
         stringBuilder.append("]");
@@ -71,28 +71,39 @@ public class ArrayQueue2 implements Queue {
     }
 
     public static void main(String[] args) {
-        Queue queue = new ArrayQueue2(2);
+        ArrayQueue2 queue = new ArrayQueue2(2);
 
-        System.out.println("queue : " + queue);
+        System.out.printf("%15s | %7s | %4s | %s%n",
+                "Command", "isEmpty", "Size", "Elements");
         queue.add(1);
-        System.out.println("queue : " + queue);
+        System.out.printf("%15s | %7s | %4d | %s%n", "queue.add(1)",
+                queue.isEmpty(), queue.size(), queue.toString());
         queue.add(2);
-        System.out.println("queue : " + queue);
+        System.out.printf("%15s | %7s | %4d | %s%n", "queue.add(2)",
+                queue.isEmpty(), queue.size(), queue.toString());
         queue.add(3);
-        System.out.println("queue : " + queue);
+        System.out.printf("%15s | %7s | %4d | %s%n", "queue.add(3)",
+                queue.isEmpty(), queue.size(), queue.toString());
         queue.add(4);
-        System.out.println("queue : " + queue);
+        System.out.printf("%15s | %7s | %4d | %s%n", "queue.add(4)",
+                queue.isEmpty(), queue.size(), queue.toString());
         queue.add(5);
-        System.out.println("queue : " + queue);
+        System.out.printf("%15s | %7s | %4d | %s%n", "queue.add(5)",
+                queue.isEmpty(), queue.size(), queue.toString());
         queue.remove();
-        System.out.println("queue : " + queue);
+        System.out.printf("%15s | %7s | %4d | %s%n", "queue.remove()",
+                queue.isEmpty(), queue.size(), queue.toString());
         queue.remove();
-        System.out.println("queue : " + queue);
+        System.out.printf("%15s | %7s | %4d | %s%n", "queue.remove()",
+                queue.isEmpty(), queue.size(), queue.toString());
         queue.remove();
-        System.out.println("queue : " + queue);
+        System.out.printf("%15s | %7s | %4d | %s%n", "queue.remove()",
+                queue.isEmpty(), queue.size(), queue.toString());
         queue.remove();
-        System.out.println("queue : " + queue);
+        System.out.printf("%15s | %7s | %4d | %s%n", "queue.remove()",
+                queue.isEmpty(), queue.size(), queue.toString());
         queue.remove();
-        System.out.println("queue : " + queue);
+        System.out.printf("%15s | %7s | %4d | %s%n", "queue.remove()",
+                queue.isEmpty(), queue.size(), queue.toString());
     }
 }

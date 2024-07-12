@@ -1,0 +1,807 @@
+:stem: latexmath
+
+= 7. Recursion(재귀 함수)
+
+* 함수 내에서 자기 자신을 다시 호출하는 함수
+* 이 강력한 기법은 반복문(예: while 문이나 for 문)을 사용하지 않고도 반복을 만들어냄.
+** 따라서 매우 적은 코드로도 상당한 결과를 만들어낼 수 있음
+** 어려운 문제에 대해 우아하고 간단한 해결책 제공
+* 하지만, 잘못 사용되면 비효율적인 코드
+* 재귀 코드는 보통 재귀 알고리즘에서 만들어짐
+* 반복 호출을 끝낼 수 있는 기본 조건(base case)이 있어야 함
+
+== 7.1. Base part(기초 부분)와 Recursion part(재귀 부분)
+
+* 재귀 함수는
+** 기초 부분과 재귀 부분을 가져야 함
+** 기초 부분은 재귀를 멈추는 역할
+** 재귀 부분은 함수가 자기 자신을 호출하는 부분
+
+== 7.2. 팩토리얼 함수(Factorial Function)
+
+**팩토리얼 함수의 수학적 정의**
+
+[stem]
+++++
+n!=
+\begin{cases}
+1, & \mbox{if }n = 0 \\
+n(n-1)!, & \mbox{if }n \gt 0
+\end{cases}
+++++
+
+* 재귀적 정의
+* 방정식의 오른쪽에서 정의된 함수를 다시 호출하면서 정의
+** n = 0, stem:[0! = 1]로 정의 (base case)
+** n = 1, stem:[1! = n! = n \times (n - 1)! = 1 \times (1 - 1)! = 1 \times (0)! = 1 \times (1) = 1]
+** n = 2, stem:[2! = n! = n \times (n - 1)! = 2 \times (2 - 1)! = 2 \times (1)! = 2 \times (1) = 2]
+** n = 3, stem:[3! = n! = n \times (n - 1)! = 3 \times (3 - 1)! = 3 \times (2)! = 3 \times (2) = 6]
+** n = 4, stem:[4! = n! = n \times (n - 1)! = 4 \times (4 - 1)! = 4 \times (3)! = 4 \times (6) = 24]
+** n = 5, stem:[5! = n! = n \times (n - 1)! = 5 \times (5 - 1)! = 5 \times (4)! = 5 \times (24) = 120]
+
+[cols="1a,1,1,1,1,1,1,1,1,1,1",frame=none,grid=none]
+|===
+^|stem:[n] ^|0 ^|1 ^|2 ^|3 ^|4 ^|5 ^|6 ^|7 ^|8 ^|9
+^|stem:[n!] ^|1 ^|1 ^|2 ^|6 ^|24 ^|120 ^|720 ^|5,040 ^|40,310 ^|362,880
+|===
+
+=== 예제 7.1 팩토리얼 함수를 재귀 함수로 구현하고, 테스트해 보자.
+
+* 재귀적으로 정의된 팩토리얼 함수를 참고하여 함수 내에서 다시 호출
++
+[source,java]
+----
+public static int factorial(int n) {
+    if (n == 0) { // base case
+        return 1;
+    }
+    return n*factorial(n-1); // n(n-1)!
+}
+----
+* 팩토리얼 함수 검증을 위한 실행 코드
++
+[source,java]
+----
+public static void main(String[] args) {
+    for (int n = 0 ; n < 10; n++) {
+        System.out.printfn("factorial(%d) = %d%s", n, factorial(n));
+    }
+}
+----
+* JUnit을 이용한 테스트 케이스
++
+[source,java]
+----
+@ParameterizedMethod("provideFactorial")
+void testFactorial(int n, int result) {
+    assertEquals(result, factorial(n));
+}
+
+static Stream<Arguments> provideFactorial() {
+    return Stream.of(
+        Arguments.of(0, 1),
+        Arguments.of(1, 1),
+        Arguments.of(2, 2),
+        Arguments.of(3, 6),
+        Arguments.of(4, 24),
+        Arguments.of(5, 120),
+        Arguments.of(6, 720),
+        Arguments.of(7, 5040),
+        Arguments.of(8, 40310),
+        Arguments.of(9, 362880)
+    );
+}
+----
+
+
+=== 예제 7.2 팩토리얼 함수를 반복문으로 구현하고, 테스트해 보자.
+
+* 팩토리얼 함수는 반복적으로 구현하기도 쉬움
++
+[source,java]
+----
+public static int factorial(int n) {
+    int f = 1;
+    for (int i = 2; i <= n; i++) {
+        f *= i;
+    }
+    return f;
+}
+----
+* 테스트 실행코드나 JUnit을 이용한 테스트 케이스는 동일
+
+=== 7.2.1. 팩토리얼 함수의 기초 부분과 재귀 부분
+
+* 기초 부분은 n이 0인 경우에는 1로 정의
+* 재귀 부분은 n이 0이 아닌 경우, n과 n-1의 팩토리얼을 곱하도록 팩토리얼 함수를 다시 호출
+* n이 0이 아닌 경우, n-1에 대한 팩토리얼을 찾고, n-2에 대한 팩토리얼을 찾음을 반복
+* n이 0이 될 때, 기초 부분으로 정의된 값을 반환하며 미뤘던 계산이 수행됨.
+
+
+== 7.3. 피보나치수열(Fibonacci Numbers)
+
+**피보나치수열의 수학적 정의**
+
+[stem]
+++++
+F_{n}=
+\begin{cases}
+0, & \mbox{if }n=0 \\
+1, & \mbox{if }n=1 \\
+F_{n-1} + F_{n-2}, & \mbox{if }n \gt 1
+\end{cases}
+++++
+
+* 첫 두 값인 stem:[F_{0}]와 stem:[F_{1}]은 기초 부분으로 값 정의
+** stem:[F_{0} = 0] (n = 0일 때)와 stem:[F_{1} = 1] (n = 1일 때)
+* 나머지 모든 값은 아래와 같이 함수를 다시 불러 정의
+** n = 2, stem:[F_{2} = F_{n} = F_{n-1} + F_{n-2} = F_{2-1} + F_{2-2} = F_{1} + F_{0} = 1 + 0 = 1]
+** n = 3, stem:[F_{3} = F_{n} = F_{n-1} + F_{n-2} = F_{3-1} + F_{3-2} = F_{2} + F_{1} = 1 + 1 = 2]
+** n = 4, stem:[F_{4} = F_{n} = F_{n-1} + F_{n-2} = F_{4-1} + F_{4-2} = F_{3} + F_{2} = 2 + 1 = 3]
+** n = 5, stem:[F_{5} = F_{n} = F_{n-1} + F_{n-2} = F_{5-1} + F_{5-2} = F_{4} + F_{3} = 3 + 2 = 5]
+** n = 6, stem:[F_{6} = F_{n} = F_{n-1} + F_{n-2} = F_{6-1} + F_{6-2} = F_{5} + F_{4} = 5 + 3 = 8]
+** n = 7, stem:[F_{7} = F_{n} = F_{n-1} + F_{n-2} = F_{7-1} + F_{7-2} = F_{6} + F_{5} = 8 + 5 = 13]
+
+[cols="1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1",frame=none, grid=none]
+|===
+^|stem:[n] ^|0 ^|1 ^|2 ^|3 ^|4 ^|5 ^|6 ^|7 ^|8 ^|9 ^|10 ^|11 ^|12 ^|13 ^|14
+^|stem:[F_{n}] ^|0 ^|1  ^|1  ^|2  ^|3  ^|5 ^|8  ^|13  ^|21  ^|34  ^|55  ^|89  ^|144  ^|233  ^| 377
+|===
+
+=== 문제 7.1 피보나치 함수를 재귀적 함수로 구현하고, 테스트하세요.
+
+* 다음은 피보나치수열을 테스트하기 위한 실행 코드이다. 출력된 결과를 위 표와 비교해 보라.
++
+[source,java]
+----
+public static void main(String[] args) {
+    for (int n = 0; n < 16; n++) {
+        System.out.printf("fibonacci(%d) = %d%n", n, fibonacci(n));
+    }
+}
+----
+* 또는, JUnit을 이용한 테스트 케이스로 확인해 보라.
++
+[source,java]
+----
+@ParameterizedTest("provideFibonacci")
+void testFibonacci(int n, int result) {
+    assertEquals(result, fibonacci(n));
+}
+
+static Stream<Arguments> provideFibonacci(){
+    return Stream.of(
+        Arguments.of(0, 0),
+        Arguments.of(1, 1),
+        Arguments.of(2, 1),
+        Arguments.of(3, 2),
+        Arguments.of(4, 3),
+        Arguments.of(5, 5),
+        Arguments.of(6, 8),
+        Arguments.of(7, 13),
+        Arguments.of(8, 21),
+        Arguments.of(9, 34),
+        Arguments.of(10, 55),
+        Arguments.of(11, 89),
+        Arguments.of(12, 144),
+        Arguments.of(13, 233),
+        Arguments.of(14, 377)
+    );
+}
+----
+
+=== 문제 7.2. 피보나치 함수를 반복문으로 구현하고, 테스트하세요.
+
+* 테스트 함수는 문제 9.1과 동일
+
+== 7.4. 재귀 함수 추적
+
+* 재귀 함수의 동작 과정을 추적하여 동작 방식에 대해 이해
+
+=== 예제 7.3. 팩토리얼 함수의 호출 과정을 추적해서 재귀 함수의 동작을 확인해 보자.
+
+* 재귀 함수로 구현한 팩토리얼 함수 이용
+* base part와 recursion part에 각각의 출력문 추가
++
+[source,java]
+----
+public static int factorial(int n) {
+    System.out.printf("called factorial(%d)%n", n);
+    if (n == 0) {
+        System.out.printf("return factorial(0) = 1%n", n);
+        return 1;
+    }
+
+    int result = n * factorial(n - 1);
+    System.out.printf("return factorial(%d) = %d * factorial(%d) = %d%n",
+            n, n, n - 1, result);
+    return result;
+}
+----
+* 실행 결과 확인
++
+[source,console]
+----
+called factorial(5)
+called factorial(4)
+called factorial(3)
+called factorial(2)
+called factorial(1)
+called factorial(0)
+return factorial(0) = 1
+return factorial(1) = 1 * factorial(0) = 1
+return factorial(2) = 2 * factorial(1) = 2
+return factorial(3) = 3 * factorial(2) = 6
+return factorial(4) = 4 * factorial(3) = 24
+return factorial(5) = 5 * factorial(4) = 120
+factorial(5) = 120
+----
+* 결과를 그림으로 보면
++
+image::./images/trace_of_factorial.svg[align=center]
+
+===  문제 7.3. 피보나치 함수에 대해서 팩토리얼 함수와 같이 호출 과정을 추적하여 동작을 확인해 보라.
+
+* 팩토리얼 함수에서는 함수 내에서 자신을 한번 호출하는 반면, 피보나치 함수에서는 두 번 호출
+* 실행 결과는
++
+[source,console]
+----
+called fibonacci(5)
+called fibonacci(4)
+called fibonacci(3)
+called fibonacci(2)
+called fibonacci(1)
+return fibonacci(1) = 1
+called fibonacci(0)
+return fibonacci(0) = 1
+return fibonacci(2) = fibonacci(1) + fibonacci(0) = 2
+called fibonacci(1)
+return fibonacci(1) = 1
+return fibonacci(3) = fibonacci(2) + fibonacci(1) = 3
+called fibonacci(2)
+called fibonacci(1)
+return fibonacci(1) = 1
+called fibonacci(0)
+return fibonacci(0) = 1
+return fibonacci(2) = fibonacci(1) + fibonacci(0) = 2
+return fibonacci(4) = fibonacci(3) + fibonacci(2) = 5
+called fibonacci(3)
+called fibonacci(2)
+called fibonacci(1)
+return fibonacci(1) = 1
+called fibonacci(0)
+return fibonacci(0) = 1
+return fibonacci(2) = fibonacci(1) + fibonacci(0) = 2
+called fibonacci(1)
+return fibonacci(1) = 1
+return fibonacci(3) = fibonacci(2) + fibonacci(1) = 3
+return fibonacci(5) = fibonacci(4) + fibonacci(3) = 8
+fibonacci(5) = 8
+----
+* 결과를 그림으로 보면
++
+image::./images/trace_of_fibonacci.svg[]
+
+== 7.5. 재귀적 이진 검색
+
+* 분할 정복 전략 사용
+* 매번 시퀀스를 절반으로 나누고 한쪽 절반에서 동일한 방식(재귀)으로 검색
+
+**재귀적 이진 검색 알고리즘**
+
+선행 조건: stem:[s = \{ s_{0}, s_{1}, \cdots , s_{n-1}\}]은 x와 동일한 타입의 n개의 값으로 구성된 *정렬된 시퀀스* +
+후행 조건: stem:[s_{i} = x]인 i가 반환되거나 -1 반환
+
+1.	시퀀스가 비어 있다면 -1 반환 (base part)
+2.	stem:[s_{i}]를 시퀀스의 중간 요소로 둠
+3.	stem:[s_{i} = x]이면, 인덱스 i 반환 (base part)
+4.	stem:[s_{i} < x]이면, stem:[s_{i}]보다 큰 하위 시퀀스에 대해 알고리즘 적용
+5.	3 또는 4에 해당하지 않는다면, stem:[s_{i}]보다 작은 하위 시퀀스에 대해 알고리즘 적용
+
+**참고**
+
+* 재귀적 이진 검색의 실행 시간은 stem:[O(\log n)]
+* 실행 시간은 재귀 호출 수에 비례하지만, 각 호출은 이전 것의 절반 크기
+* 따라서 재귀 호출 수는 stem:[n]을 2로 나누는 횟수로 stem:[\log_{2} n]
+
+===  예제 7.4. 재귀 이진 탐색을 구현하고, 테스트해 보자.
+
+* 정렬된 배열과 배열에서 검색해야 할 범위 지정
++
+[source,java]
+----
+public static int search(int[] a, int lo, int hi, int x) {
+    // PRECONDITION: a[0] <= a[1] <= ... <= a[a.length-1];
+    // POSTCONDITIONS: returns i;
+    // if i >= 0, then a[i] == x; otherwise i == -1;
+    if (lo > hi) {
+        return -1; // basis
+    }
+    int i = (lo + hi) / 2;
+    if (a[i] == x) {
+        return i;
+    } else if (a[i] < x) {
+        return search(a, i + 1, hi, x);
+    } else {
+        return search(a, lo, i - 1, x);
+    }
+}
+----
+* 실제 호출되는 함수는 전체 배열에서 찾도록 구성
++
+[source,java]
+----
+public static int search(int[] a, int x) {
+    return search(a, 0, a.length - 1, x);
+}
+----
+* 검색은
++
+[source,java]
+----
+public static void main(String[] args) {
+    int[] a = { 22, 33, 44, 55, 66, 77, 88, 99 };
+    System.out.println(Arrays.toString(a));
+    System.out.println("search(a, 44): " + search(a, 44));
+    System.out.println("search(a, 50): " + search(a, 50));
+    System.out.println("search(a, 77): " + search(a, 77));
+    System.out.println("search(a, 100): " + search(a, 100));
+}
+----
+* 실행 결과는
++
+[source,console]
+----
+[22, 33, 44, 55, 66, 77, 88, 99]
+search(a, 44): 2
+search(a, 50): -1
+search(a, 77): 5
+search(a, 100): -1
+----
+** 찾고자 하는 값이 없는 경우(50, 100)에는 -1 반환
+
+== 7.5. 이항 계수
+
+* stem:[(x + 1)^{n}] 형식의 이항식 확장에서 결과로 나오는 계수
+* 예를 들어,
++
+[stem]
+++++
+{(x + 1)}^{6} = x^{6} + 6x^{5} + 15x^{4} + 20x^{3} + 15x^{2} + 6 x + 1
+++++
+** 계수는 1, 6, 15, 20, 15, 6, 1
+* 프랑스 수학자 블레즈 파스칼(1623-1662)은 이항 계수들 사이에 재귀적인 관계 발견
+** 이항 계수들을 삼각형으로 배열하여, 각 내부 숫자가 바로 위의 두 숫자의 합임을 발견
+** 예를 들어, 15 = 5 + 10
++
+image::./images/triangle_of_pascal.svg [파스칼의 삼각형, align=center]
+* stem:[c(n,k)] : 가 n번째 행과 k번째 열의 계수(0 based index)
+** c(6,2) = 15
+* 파스칼의 재귀 관계는 다음과 같이 표현
++
+[stem]
+++++
+c(n, k) =
+\begin{cases}
+1, & k = 0 \\
+1, & n = k \\
+c(n-1, k-1) + c(n-1, k), & 0 < k < n
+\end{cases}
+++++
+** 예를 들어, c(6,2) = c(5,1) + c(5,2)
+
+=== 문제 7.5 이항 계수 함수의 재귀적 함수로 구현하고, 테스트하세요.
+
+* 시험실행 코드는
++
+[source,java]
+----
+public static void main(String[] args) {
+    for (int n = 0; n < 5; n++) {
+        for (int k = 0; k <= n; k++) {
+            int result = c(n, k);
+            System.out.printf("%d ", result);
+        }
+        System.out.println("");
+    }
+}
+----
+* 실행 결과는
++
+[source,console]
+----
+1
+1 1
+1 2 1
+1 3 3 1
+1 4 6 4 1
+----
+* base part는 삼각형의 왼쪽과 오른쪽 측면으로, k = 0이거나 k = n
+
+**이항 계수는 조합론에서 사용되는 조합 숫자와 동일*
+
+* 공식
++
+[stem]
+++++
+c(n,k) = {{n!} \over {k!(n-k)!}} = \left({n \over 1} \right)\left({{n-1} \over 2} \right)\left({{n-2} \over 3}\right)\cdots \left({{n-k+1} \over k}\right)
+++++
+** 여기서, stem:[c(n,k) = {n \choose k}]로 표기, "n choose k"로 발음
+** "8 choose 3"은 stem:[{8 \choose 3} = (8/1)(7/2)(6/3) = 56]
+
+=== 문제 7.6 이항 계수 함수를 반복문으로 이용해 구현하고, 테스트하세요.
+
+* 조합론의 조합 공식을 이용해 구현
+* *힌트*
+** 반복 횟수는 예에서 보는 것과 같이 k와 연관됨
+* 결과 확인을 위한 실행 코드는 문제 9.5 참조
+
+== 7.6. 유클리드 알고리즘
+
+* 두 양의 정수의 최대공약수 계산
+* 유클리드의 원리집(기원전 약 300년) 제7권 제2 명제
+* 아마도 가장 오래된 재귀 알고리즘일 것
+
+**알고리즘**
+
+. 큰 수 m에서 작은 수 n을 반복해서 뺀 다음 결과 차이 d가 n보다 작아질 때까지 계속
+. n 대신 d를, m 대신 n을 넣고 같은 단계 반복
+. 두 숫자가 같아질 때까지 계속(또는 나머지가 0)
+. 남은 숫자가 원래 두 숫자의 최대공약수
+
+* 예를 들어, 494와 130의 최대 공약수 26은 아래의 단계로 계산
++
+image::./images/euclid_algorithm.svg[align=center]
+
+
+=== 문제 7.7 유클리드 알고리즘을 재귀 함수로 구현하고, 테스트하세요.
+
+* 알고리즘의 각 단계는 단순히 더 큰 수에서 더 작은 수를 빼는 것
+* gcd(m,n-m) 또는 gcd(m-n,n)을 호출하여 재귀적으로 수행
+
+== 7.7. 재귀 함수의 귀납적 증명
+
+* 재귀적 함수는 보통 _수학적 귀납법_의 원리에 의해 증명
+* 이 원리는
+. 첫 번째 명제가 참임을 증명
+. 시퀀스의 모든 다른 명제는 그 앞선 명제가 참임을 가정함으로써 증명
+* 재귀 함수와 수학적 귀납법을 비교해 보면,
+. 첫 번째 명제는 재귀 함수의 base part와 동일하게 올바른 값으로 정의
+. 시퀸스의 모든 다른 명제는 재귀 함수로 정의되고, 재귀 함수는 그에 앞선 재귀 함수로 구성되어 _수학적 귀납법_의 _귀납 단계_(inductive step)에 동일
+
+**재귀 함수로 구현한 팩토리얼 함수 증명**.
+
+* f(0), f(1)는 base part로서 올바른 값 1 반환(base part)
++
+[source,java]
+----
+if (n < 2) {
+    return 1;
+}
+----
+* 그다음에는 함수가 어떤 n > 0보다 작은 모든 정수에 대해 올바른 값을 반환한다고 가정
++
+[source,java]
+----
+return n*f(n-1);
+----
+* 함수가 올바른 값을 반환할 것이라 가정하였기에 위 값도 올바른 값을 반환
+
+**재귀 함수로 구현된 유클리드 알고리즘 검증**.
+
+* 두 값이 같을 때, n은 최대 공약수 반환(base part)
++
+[source,java]
+----
+if (m == n) {
+    return n;
+}
+----
+* 만약 m과 n이 같지 않다면, 함수는 gcd(m,n-m) 또는 gcd(m-n,n)을 반환(recursion part)
++
+[source,java]
+----
+if (m > n) {
+    return gcd(m - n, n);
+} else {
+    return gcd(m, n - m);
+}
+----
+
+== 7.8. 복잡성 분석
+
+* stem:[T(n)] 을 크기가 n인 문제를 처리하는 데 필요한 단계 수
+* 알고리즘의 재귀 부분은 stem:[T(n)]에 대한 재귀식으로 변환
+
+=== 7.8.1. 재귀적 팩토리얼 함수는 stem:[O(n)] 시간에 실행
+
+* 초기 호출 f(n)에서 함수로의 재귀 호출 수를 stem:[T(n)]
+* n < 2이면 재귀 호출이 없으므로, stem:[T(0) = T(1) = 0]
+* n > 1이라면,
++
+[source,java]
+----
+return n*f(n-1);
+----
+** 재귀 호출 f(n-1)
+** 재귀 호출의 총횟수는 1이고 f(n-1)에서 수행되는 호출의 수
++
+[source,java]
+----
+T(n) = 1 + T(n - 1)
+----
+** 이를 다시 정리하면,
++
+[source,java]
+----
+T(n) = n - 1, for n > 0
+----
+* 결론은
++
+[stem]
+++++
+\begin{align*}
+T(n + 1) &= 1 + T(n) = 1 + f (n) = 1 + (n - 1) = n \\
+f(n + 1) &= (n + 1) - 1 = n
+\end{align*}
+++++
+
+== 7.9. Dynamic Programming(동적 프로그래밍)
+
+* 재귀 함수는 빈번한 함수 호출로 매우 비효율적
+* 그래서 너무 복잡하지 않다면 반복적인 구현이 더 나을 수 있음
+* 다른 대안은 이전에 계산된 값을 재귀 함수 호출로 다시 계산하지 않도록 저장 후 재사용(**_동적 프로그래밍_**)
+
+=== 문제 7.8 피보나치 함수에 dynamic programming 기법을 적용하여 구현하고, 테스트하세요.
+
+* 계산된 f(n)를 저장하기 위한 배열 생성
+* 배열에서 f(n)가 없으면, f(n-1), f(n-2)를 찾아 계산
+** 계산된 값은 배열의 f(n) 자리에 저장
+* 구현은 처음 n개의 피보나치 수를 저장하기 위한 n개의 정수 배열 f[]를 사용
+
+== 7.10. 하노이의 탑
+
+image::./images/hanoi_tower.svg [하노이의 탑 퍼즐, align=center]
+
+* 재귀를 요구하는 문제의 고전적인 예
+
+**게임 규칙**
+
+* 세 개의 세로 기둥인 A, B, C로 라벨이 지정된 보드와 중앙에 구멍이 있는 n개의 디스크 순서로 구성
+* 디스크의 반지름이 커지는 각기 다르며, 작은 디스크 위에 큰 디스크를 올릴 수 없음
+* 한 번에 한 개의 디스크씩 이동 가능
+
+**재귀적 방법에 의한 해결**
+
+. A 기둥에서 B 기둥으로 작은 n-1개의 디스크를 이동합니다.
+. 남은 디스크를 A 기둥에서 C 기둥으로 이동합니다.
+. B 기둥에서 C 기둥으로 작은 n-1개의 디스크를 이동합니다.
+
+* 첫 번째와 세 번째 단계는 재귀적
+* n-1개의 디스크에 대해 시작과 목표 기둥만 다를 뿐 새로운 하노이 탑 문제
+
+**디스크 개수에 따른 예**
+
+* 디스크 1개
+. 디스크를 막대 A에서 막대 C로 옮김
+* 디스크 2개
+. 첫 번째 디스크를 막대 A에서 막대 B로 옮김
+. 두 번째 디스크를 막대 A에서 막대 C로 옮김
+. 첫 번째 디스크를 막대 B에서 막대 C로 옮김
+* 디스크 3개
+. 첫 번째 디스크를 막대 A에서 막대 C로 옮김
+. 두 번째 디스크를 막대 A에서 막대 B로 옮김
+. 첫 번째 디스크를 막대 C에서 막대 B로 옮김
+. 남은 디스크를 막대 A에서 막대 C로 옮김
+. 첫 번째 디스크를 막대 B에서 막대 A로 옮김
+. 두 번째 디스크를 막대 B에서 막대 C로 옮김
+. 첫 번째 디스크를 막대 A에서 막대 C로 옮김
+
+=== 문제 7.8 재귀적 방법을 이용해 하노이의 탑 해결을 위한 함수를 작성하고, 테스트하세요.
+
+* 세 개의 디스크를 막대 A에서 막대 B를 거쳐 막대 C로 옮기는 하노이의 탑 문제
+
+[source,java]
+----
+public class Problem9_8 {
+
+    public static void main(String[] args) {
+        hanoiTowers(3, 'A', 'B', 'C');
+    }
+
+    public static void hanoiTowers(int n, char x, char y, char z) {
+        //...
+    }
+}
+----
+
+출력은 아래와 같습니다.
+
+[source,console]
+----
+Move top disk from peg A to peg C.
+Move top disk from peg A to peg B.
+Move top disk from peg C to peg B.
+Move top disk from peg A to peg C.
+Move top disk from peg B to peg A.
+Move top disk from peg B to peg C.
+Move top disk from peg A to peg C.
+----
+
+== 7.11. 상호 재귀
+
+* 함수가 자기 자신을 호출할 때, _직접 재귀_
+* 함수가 다른 함수들을 호출하고, 그 함수들이 다시 원래 함수를 호출하는 경우, _간접 재귀_
+** 두 함수가 서로를 호출하는 경우, _상호 재귀_
+
+image::./images/recursion.svg [재귀의 종류, align=center]
+
+=== 예제 7.5 상호 재귀로 계산된 사인과 코사인 함수를 작성하고, Math 모듈에서 제공하는 함수화 비교하세요.
+
+* 삼각법에서 사인과 코사인 함수를 상호 재귀를 사용하여 가장 간단한 방법(가장 효율적인 방법은 아니지만)
++
+[stem]
+++++
+\begin{align*}
+sin2\theta &= 2sin\theta cos\theta \\
+cos2\theta &= 1 - 2{(sin\theta )}^{2}
+\end{align*}
+++++
+* base part를 위해서는 두 개의 테일러 다항식 적용
++
+[stem]
+++++
+\begin{align*}
+sin x &\approx x - x^{3}/6 \\
+cos x &\approx 1 - x^{2}/2
+\end{align*}
+++++
+** x의 작은 값에 대해 근삿값( stem:[|x| < 0.005])
+
+[source,java]
+----
+public class Example9_5 {
+    public static void main(String[] args) {
+        String fmt1 = "%18s%18s%18s%n";
+        String fmt2 = "%18.13f%18.13f%18.13f%n";
+        System.out.printf(fmt1, "s(x)  ", "Math.sin(x) ", "error  ");
+        for (double x = 0.0; x < 1.0; x += 0.1) {
+            System.out.printf(fmt2, s(x), Math.sin(x), Math.sin(x) - s(x));
+        }
+        System.out.printf(fmt1, "c(x)  ", "Math.cos(x) ", "error  ");
+        for (double x = 0.0; x < 1.0; x += 0.1) {
+            System.out.printf(fmt2, c(x), Math.cos(x), c(x) - Math.cos(x));
+        }
+    }
+
+    public static double s(double x) {
+        if (-0.005 < x && x < 0.005) {
+            return x - x * x * x / 6; // basis
+        }
+        return 2 * s(x / 2) * c(x / 2); // recursion
+    }
+
+    public static double c(double x) {
+        if (-0.005 < x && x < 0.005) {
+            return 1.0 - x * x / 2; // basis
+        }
+        return 1 - 2 * s(x / 2) * s(x / 2); // recursion
+    }
+}
+----
+
+출력은 다음과 같습니다.
+
+[source,console]
+----
+            s(x)        Math.sin(x)            error
+   0.0000000000000   0.0000000000000   0.0000000000000
+   0.0998334166464   0.0998334166468   0.0000000000005
+   0.1986693307941   0.1986693307951   0.0000000000009
+   0.2955202066544   0.2955202066613   0.0000000000069
+   0.3894183423069   0.3894183423087   0.0000000000018
+   0.4794255385991   0.4794255386042   0.0000000000051
+   0.5646424733831   0.5646424733950   0.0000000000120
+   0.6442176872362   0.6442176872377   0.0000000000015
+   0.7173560908969   0.7173560908995   0.0000000000027
+   0.7833269096232   0.7833269096275   0.0000000000043
+   0.8414709848016   0.8414709848079   0.0000000000063
+            c(x)        Math.cos(x)            error
+   1.0000000000000   1.0000000000000   0.0000000000000
+   0.9950041652781   0.9950041652780   0.0000000000000
+   0.9800665778414   0.9800665778412   0.0000000000002
+   0.9553364891277   0.9553364891256   0.0000000000021
+   0.9210609940036   0.9210609940029   0.0000000000007
+   0.8775825618932   0.8775825618904   0.0000000000028
+   0.8253356149179   0.8253356149097   0.0000000000082
+   0.7648421872857   0.7648421872845   0.0000000000013
+   0.6967067093499   0.6967067093472   0.0000000000027
+   0.6216099682760   0.6216099682707   0.0000000000054
+   0.5403023058779   0.5403023058681   0.0000000000098
+----
+
+=== 문제 7.9 주어진 함수를 이용해 앞에서 정의한 삼각법 사인 코사인 함수를 적은 반복 횟수로 얻어지는지 확인하세요.
+
+* 빠른 결과를 얻기 위한 정확한 테일러 함수
++
+[stem]
+++++
+\sin x \approx x - x^{3}/6 + x^{5}/120\\
+\cos x \approx 1 - x^{2}/2 + x^{4}/24
+++++
+
+== 7.12. 문제 복습
+
+. 재귀 함수는 두 부분으로 구성되어야 합니다.
+* base part과 recursion partion 각각이 무엇이며, 재귀에 필수적인 이유를 설명하세요.
+. 재귀 팩토리얼 함수에 대한 factorial(10) 호출은 몇 번의 재귀 호출을 생성합니까?
+. 재귀 피보나치 함수에 대한 fibonacci(6) 호출은 몇 번의 재귀 호출을 생성합니까?
+. 반복적인 해결책 대신 재귀적인 해결책을 구현하는 장단점은 무엇인가요?
+. 직접적 재귀와 간접적 재귀의 차이점은 무엇인가요?
+
+== 7.13. 문제
+
+. 처음 n개의 양의 정수의 제곱 합을 반환하는 재귀 함수를 작성하고 테스트하세요.
+. 배열의 처음 n개 요소의 합을 반환하는 재귀 함수를 작성하고 테스트하세요.
+. 배열의 처음 n개 요소 중 최댓값을 반환하는 재귀 함수를 작성하고 테스트하세요.
+. 주어진 문자열이 회문인지 여부를 결정하는 재귀 부울 함수를 작성하고 테스트하세요.
+* 회문은 그 문자열을 뒤집어도 같은 문자열인 것입니다.
+. 양의 정수의 이진 표현을 포함하는 문자열을 반환하는 재귀 함수를 작성하고 테스트하세요.
+. 양의 정수의 16진수 표현을 포함하는 문자열을 반환하는 재귀 함수를 작성하고 테스트하세요.
+. 문자열의 처음 n개 문자의 모든 순열을 출력하는 재귀 함수를 작성하고 테스트하세요.
+* 예를 들어, print("ABC",3) 호출은 다음과 같이 출력할 것입니다.
+* ABC ACB BAC BCA CBA CAB
+. 배열을 사용하지 않고 반복적으로 피보나치 함수를 구현하세요.
+. 재귀적인 Ackermann 함수를 구현하세요
++
+[stem]
+++++
+A(m,n) =
+\begin{cases}
+n + 1, &m = 0 \text { & } n > 0 \\
+A(m - 1, 1), &m > 0 \text { & } n = 0 \\
+A(m - 1, A(m, n - 1)), &m > 0 \text { & } n > 0
+\end{cases}
+++++
+. Euclidean 알고리즘을 반복문으로 구현하세요.
+. 하노이 탑 프로그램은 3개의 디스크에 대해 7개의 디스크 이동을 수행합니다. +
+다음에 대해 몇 개의 디스크 이동이 수행됩니까?
+* 5개 디스크?
+* 6개 디스크?
+* n개 디스크?
+. 이 공식들을 사용하여 쌍곡사인과 쌍곡코사인 함수를 재귀적으로 구현하세요.
++
+[stem]
+++++
+\begin{align*}
+sinh2x &= 2sinhx cosh x \\
+cosh2x &= 1 + 2(sinhx)^{2}\\
+sin x &\approx x + x^{3}/6\\
+cos x &\approx 1 + x^{2}/2
+\end{align*}
+++++
+결과를 Math.sinh() 및 Math.cosh() 메서드의 해당 값과 비교하세요.
+. 이 삼각함수 공식들을 사용하여 탄젠트 함수를 재귀적으로 구현하세요:
++
+[stem]
+++++
+\begin{align*}
+tan2 \theta &= 2tan \theta /(1 - tan^{2}\theta ) \\
+tan x &\approx x + x^{3}/3
+\end{align*}
+++++
+결과를 Math.tan() 메서드의 해당 값과 비교하세요.
+. 다항식 stem:[a_{0} + a_{1} x + a_{2} x^{2} + • • • + a_{n} x^{n}]을 재귀함수로 구현합니다.
+* 단, 여기서 n+1개의 계수 stem:[a_{i}]는 차수 stem:[n]과 함께 함수에 배열 형태로 전달됩니다.
+
+
+---
+
+ifndef::github-env[]
+link:../index.adoc[목록]
+endif::[]
+
+ifdef::github-env[]
+link:../README.md[목록]
+endif::[]

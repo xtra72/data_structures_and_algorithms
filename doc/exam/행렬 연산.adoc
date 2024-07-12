@@ -1,0 +1,35 @@
+= 몇가지 행렬 연산
+
+. 배열의 각 요소를 곱하여 그 합을 반환하는 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+double innerProduct(double[] x, double[] y)
+----
+* stem:[innerProdut(x,y) = \sum\limits_{i=0}^{n} x \lbrack i \rbrack y \lbrack i \rbrack]
+{sp}+
+. 두 배열의 대수적 외적(algebraic outer product)을 계산하는 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+double[][] outerProduct(double[] x, double[] y)
+----
+* stem:[p\lbrack i \rbrack \lbrack j \rbrack = a \lbrack i \rbrack * b \lbrack j \rbrack]
+{sp}+
+
+. 두 배열의 행렬 곱하여 반환하는 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+double[][] product(double[][] a, double[][] b)
+----
+* stem:[p \lbrack i \rbrack \lbrack j \rbrack = \sum\limits_{k=0}^{n} a\lbrack i \rbrack \lbrack k \rbrack \times b \lbrack k \rbrack \lbrack j \rbrack]
+{sp}+
+. 배열의 전치 행렬을 생성하여 반환하는 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+double[][] transpose(double[][] a)
+----
+* stem:[ta \lbrack i \rbrack \lbrack j \lbrack = a \lbrack j \rbrack \lbrack i \rbrack]
+{sp}+

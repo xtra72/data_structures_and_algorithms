@@ -1,0 +1,36 @@
+:sourcedir: ../src/data_structures_and_algorithms/src/main/java/com/nhnacademy/exam
+
+= 문제 1. 요세푸스 문제
+
+* 역사학자 요세푸스(Josephus)가 67년 로마군에게 포위당한 상황에서 자신과 40명의 병사들 간에 만든 자살 계약에 기반한다. 요세푸스는 각 사람이 이웃을 죽이도록 제안했으며, 이 계획은 필연적으로 한 사람이 자살하도록 남게 된다. 하지만, 요세푸스는 자신을 포함해 2명이 남았을때, 다른 한명을 설득해 로마군에 항복하여 살아남았다.
+
+
+**요구 사항**
+
+* n명의 병사를 줄세운다.
+* 첫번째부터 시작해 정해진 n번째 병사를 죽인다.
+* 줄의 마지막에 도착하면 앞으로 돌아가 계속한다.
+* 마지막에 남는 1명의 병사를 출력한다.
+
+
+**수행 결과**
+
+* 8명의 병사를 줄세워 매번 3번째 병사들을 죽인다.
++
+image::../images/josephus_problem.svg[The solution to the Josephus problem,align=center]
+[source,console]
+----
+[1, 2, 3, 4, 5, 6, 7, 8]
+killed : 3
+killed : 6
+killed : 1
+killed : 5
+killed : 2
+killed : 8
+killed : 4
+The lone survivor is 7
+----
+
+**소스 코드**
+
+* link:{sourcedir}/JosephusProblem.java[요세푸스 문제]

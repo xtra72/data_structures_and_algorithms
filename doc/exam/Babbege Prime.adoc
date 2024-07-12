@@ -1,0 +1,20 @@
+= Babbage prime을 찾기 위한 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+int[] babbagePrime(int n);
+----
+* 찰스 배비지(Charles Babbage 1792-1871)는 1823년에 정부 보조금을 처음으로 받아내어 차분 기관을 만들기 위해 £1000를 받았습니다. 그의 보조금 제안서에서, Babbage는 그의 컴퓨터가 stem:[x^2 + x + 41] 공식을 표로 작성할 것이라고 예를 들었습니다. 이 함수는 많은 소수를 생성하기 때문에 수학자들에게 흥미로웠습니다.
+* stem:[n = x^2 + x + 41] 형태의 소수를 Babbage 소수라고 할 수 있습니다.
+* 앞에서 작성한 Primes 클래스를 사용합니다.
+* 첫 5줄의 출력은 다음과 같아야 합니다.
++
+[source,console]
+----
+0 41 is prime
+1 43 is prime
+2 47 is prime
+3 53 is prime
+4 61 is prime
+----
+{sp}+

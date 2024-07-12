@@ -1,0 +1,204 @@
+:sourcedir: ../src/data_structures_and_algorithms/src/main/java/com/nhnacademy/stack
+
+= 4. Stack(스택)
+
+* 후입선출(LIFO) 방식을 구현하는 컬렉션
++
+image::./images/stack.svg[width=75%,align=center]
+* 접근 제한
+** 접근할 수 있는 유일한 객체가 마지막에 삽입된 객체
+** 쌓여 있는 접시
++
+image::https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Tallrik_-_Ystad-2018.jpg/220px-Tallrik_-_Ystad-2018.jpg[align=center]
+** 하노이 탑
++
+image::./images/hanoi_tower.svg[align=center]
+
+== 4.1. 스택 연산
+
+**스택 기본 연산**
+
+* 기본
+** push - 스택의 맨 위에 요소 추가
+** pop - 스택의 맨 위에 있는 현재 요소 제거
+* 추가
+** peek - 스택의 맨 위에 있는 현재 요소 접근
+
+== 4.2. Stack Interface
+
+* 정수를 요소로 갖는 스택의 기본 연산 선언
+
+[source,java]
+----
+public interface Stack {
+    void push(int element);
+
+    int pop();
+
+    int peek();
+}
+----
+
+== 4.3. 배열을 이용한 스택 구현
+
+* 배열을 이용해 Stack 구현
+** 인덱스를 이용한 접근으로 빠르고 간편
+* 초기 배열 크기 지정
+** 배열이 고정될 경우, 배열 크기 내에서만 사용 가능
+
+=== 예제 1. 배열을 이용해 ArrayStack을 구현해 보자.
+
+* 데이터 저장을 위한 내부 자료 구조는 배열 사용
+* 초기 배열 크기 설정
+
+**테스트 코드**
+
+[source,java]
+----
+include::{sourcedir}/Exam01.java[lines=49..72,indent=0]
+----
+
+**수행 결과**
+
+[source,console]
+----
+top : 1
+top : 2
+top : 3
+top : 4
+top : 5
+top : 4
+top : 3
+top : 2
+top : 1
+----
+
+**생각해 보기**
+
+* 스택이 의도한 대로 잘 동작하는가?
+* 초기 설정 값을 잘못 입력하거나 너무 크게 입력한 경우 어떠한 문제가 발생하는가?
+* 요소가 없으면, pop()이나 peek()을 호출하면?
+
+=== 문제 1. ArrayStack을 다음 조건에 맞도록 수정하고, 테스트하여라.
+
+* 스택에 더 이상의 요소 추가가 어려운 경우, 내부 배열 확장
+** 확장 시 기본 단위는 10개로 하며, 생성 시 설정 가능
+* 스택에 저장된 요소 수 확인
+* 스택이 비어 있는지 확인
+
+**테스트 코드**
+
+[source,java]
+----
+include::{sourcedir}/Problem01.java[lines=69..91,indent=0]
+----
+
+**수행 결과**
+
+[source,console]
+----
+top : 1, size : 1
+top : 2, size : 2
+top : 3, size : 3
+top : 4, size : 4
+top : 5, size : 5
+top : 4, size : 4
+top : 3, size : 3
+top : 2, size : 2
+top : 1, size : 1
+----
+
+**생각해 보기**
+
+* 예제 1에서 고민했었던 문제들은 해결 되었나?
+* 수정된 ArrayStack에 추가적인 문제는 없나?
+** 초기 크기와 확장 단위를 적게 설정한다면?
+** 초기 크기와 확장 단위를 크게 설정한다면?
+
+== 4.4. Linked data를 이용한 스택 구현
+
+* Linked data를 이용해 Stack 구현
+** 메모리 허용 범위 내에서 크기 제한 없음
+** 배열과 같이 초기 크기 설정이 필요 없어 효율적 메모리 사용
+* 요소 추가/삭제 시 추가적인 시스템 자원 필요
+
+=== 문제 2. Linked data를 이용해 LinkedStack을 작성하고, 테스트하세요.
+
+* 앞에서 구현한 Node class 이용
+* Stack 크기에 제한 없음
+** 단, 시스템에서 허용되는 범위 이내
+
+**수행 결과**
+
+[source,console]
+----
+top : 1, size : 1
+top : 2, size : 2
+top : 3, size : 3
+top : 4, size : 4
+top : 5, size : 5
+top : 4, size : 4
+top : 3, size : 3
+top : 2, size : 2
+top : 1, size : 1
+----
+
+=== 문제 3. LinkedStack에서 자원 할당과 해제 과정을 최소화하라.
+
+* Linked data를 이용할 경우, 메모리 공간을 할당하거나 반환(가베지콜렉터에 의해 자동)할 때 VM에 주는 부하가 큼
+* 자원의 재활용을 통해 효율적으로 처리
+
+== 4.5. 응용: 후위 표기법 계산기
+
+* 스택 데이터 구조 이용
+* 산술식의 _후위 표기법_ (_폴란드 표기법_)
+** 연산자가 피연산자 뒤에 배치
+** 예를 들어, 3*(4 + 5)의 후위 표기법은 3 4 5 + *
+* 표기법보다 기계에서 처리하기 쉬움
+
+=== 예제 2. 간단한 후위 표기법 계산기를 만들어 보자.
+
+* 산술식을 후위 표기법으로 입력
+* 피연산자, 연산자는 공백으로 구분
+** 공백을 통한 분리는 String.split() 사용
+* 입력된 숫자는 스택에 적재
+* 연산자(+, -, *, /)가 들어오면 스택에서 2개의 피연산자를 꺼내어 계산 후 다시 스택에 넣기
+** 문제를 단순히 하기 위해 잘못된 순서 입력은 고려하지 않음
+*** 피연산자가 1개인데, 연산자 입력시 오류 발생 등은 고려하지 않음
+* q 입력시 종료
+
+**수행 결과**
+
+[source,console]
+----
+3 4 5 * -
+        4.00 * 5.00 = 20.00
+        3.00 - 20.00 = -17.00
+q
+----
+
+== 4.6. 복습 질문
+
+1. 스택이 LIFO 구조라고 불리는 이유는 무엇인가요?
+2. 스택을 다음과 같이 부르는 것이 합리적일까요?
+a. LILO 구조?
+b. FILO 구조?
+3. 다음에 대한 설명은 무엇인가요?
+a. Prefix 표기법?
+b. Infix 표기법?
+c. Postfix 표기법?
+4. 후위 표현식에 대해 각각 다음이 사실인지 결정하세요:
+a. x y + z + = x y z + +
+b. x y + z - = x y z - +
+c. x y - z + = x y z + -
+d. x y - z - = x y z - -
+
+---
+
+ifndef::github-env[]
+link:../index.adoc[목록]
+endif::[]
+
+ifdef::github-env[]
+link:../README.md[목록]
+endif::[]

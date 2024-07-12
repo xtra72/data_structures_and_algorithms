@@ -1,0 +1,19 @@
+= 메르센 소수(Mersenne prime)를 찾아 출력하는 프로그램을 작성하세요.
+
+[source,java]
+----
+boolean isMersennePrime(int p);
+----
+
+* Minimite 수도사 Marin Mersenne(1588–1648)는 p가 소수일 때 stem:[n = 2^p - 1] 형태의 수를 연구했습니다. 그는 대부분의 n이 소수일 것이라고 믿었습니다. 이제 이 수는 Mersenne 소수라고 합니다.
+* 앞에서 작성한 Primes 클래스를 사용하세요.
+* 첫 5줄의 출력은 다음과 같아야 합니다.
+
+[source,console]
+----
+2 2^2-1 = 3 is prime
+3 2^3-1 = 7 is prime
+5 2^5-1 = 31 is prime
+7 2^7-1 = 127 is prime
+11 2^11-1 = 2047 is not prime
+----

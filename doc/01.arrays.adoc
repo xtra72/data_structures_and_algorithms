@@ -1,0 +1,994 @@
+:stem: latexmath
+:sourcedir: ../src/data_structures_and_algorithms/src/main/java/com/nhnacademy/array
+:testdir: ../src/data_structures_and_algorithms/src/test/java/com/nhnacademy/array
+:imagesdir: ./images
+
+= 1. Array(배열)
+
+== 1.1. Array란?
+
+* stem:[0, 1, 2, \cdots]와 같이 번호가 매겨진 요소들의 순서로 이루어진 객체
+* _인덱스_
+** 요소가 위치를 나타내는 번호
+** 대괄호 연산자[]를 사용
+** a[0], a[1], a[2], ...
+* 매우 효율적이기 때문에 널리 사용
+
+== 1.2. 속성
+
+**자바 배열의 주요 속성**
+
+. *객체(Object)*
+.. 동적(dynamic)으로 생성
+.. Object 타입 변수에 할당 가능, 즉, Object 클래스의 확장으로 동작
+.. Object 클래스의 모든 메서드 호출 가능
+.. 배열 변수는 배열 객체에 대한 참조 보유
+.. Object.clone()를 사용하여 배열 복제
+.. 배열의 동등성 테스트는 Object.equals()가 아닌 Arrays.equals()를 사용
+.. 배열 객체는 Clonable하고, java.io.Serializable 함
+. *변수의 연속 포함*
+.. 이러한 변수를 배열의 구성 요소(component) 또는 요소(element)
+.. 구성 요소 타입이 T이면 배열 타입은 T[], 즉, 배열은 클래스로 정의되지는 않았지만, 요소 타입에서 유도된 별도의 타입
+.. 구성 요소 타입으로 배열 타입 가능
+.. 요소의 타입은 기본 타입 또는 참조 타입
+.. 참조 타입의 변수는 null이 가능하므로, *초기화되지 않은 참조 타입의 배열 요소 기본값은 null*
+. *구성 요소의 수*
+.. 배열의 길이는 배열이 생성될 때 설정되며 변경 불가
+.. 배열의 길이는 public final 인스턴스 변수(length) 참조
+. 인덱스값은 *0...length - 1 범위의 정수*
+.. 인덱스를 벗어나면 ArrayIndexOutOfBoundsException
+.. 인덱스로 int, short, byte 또는 char 타입만 가능
+
+== 1.3. 설정
+
+=== 1.3.1. 선언 (Declaration)
+
+* 배열의 데이터 타입과 배열의 이름을 컴파일러에게 알려주는 과정
+* 배열이 어떤 타입의 데이터를 담을 수 있는지, 그리고 배열의 이름이 무엇인지만 지정
+* 메모리를 할당하지는 않음
++
+[source,java]
+----
+int[] numbers;
+Object objects[];
+----
+
+=== 1.3.2. 정의 (Definition)
+
+* 배열의 크기를 지정하는 과정으로 배열 요소를 저장할 준비 완료
+* 메모리 할당
+* new 연산자를 이용해 할당
++
+[source,java]
+----
+numbers = new int[5];
+objects = new Object[10];
+----
+* 배열의 선언과 정의를 한 줄로 결합
++
+[source,java]
+----
+int[] numbers = new int[5];
+----
+* 다차원 배열 지원
+** 둘 이상의 인덱스 연산자를 이용해 다차원 선언 및 정의
++
+[source,java]
+----
+double[][]  a = new double[10][10];
+double b[][] = new double[10][10];
+----
+
+=== 1.3.3. 초기화(Initialization)
+
+* new 연산자를 이용할 경우, 해당 타입의 기본값으로 초기화
++
+[source,java]
+----
+int[] a = new int[10];
+double[] b = new double[10];
+boolean[] c = new boolean[10];
+Object[] d = new Object[10];
+
+System.out.println(Arrays.toString(a));
+System.out.println(Arrays.toString(b));
+System.out.println(Arrays.toString(c));
+System.out.println(Arrays.toString(d));
+----
+** Primitive 타입은 0 또는 false
+** Object 타입은 null
+* new 연산자를 이용하지만, 초기값을 설정할 수 있음.
++
+[source,java]
+----
+int e[] = new int[]{ 0, 1, 1, 2, 3};
+System.out.println(Arrays.toString(e));
+----
+** 단, new int[]로 타입만 설정할 뿐, 크기는 뒤에 따라오는 초기값에 의해 결정됨.
+* new 연산자를 이용하지 않더라도 배열 초기화를 이용해 할당 가능
++
+[source,java]
+----
+int f[] = { 0, 1, 1, 2, 3};
+System.out.println(Arrays.toString(f));
+----
+* 다차원 배열의 초기화 가능
++
+[source,java]
+----
+int[][] g = { {0, 1}, {2, 3}, {4, 5}};
+int[][] h = { {0, 1}, null, {2, 3, 4, 5}};
+System.out.println(Arrays.toString(g));
+System.out.println(Arrays.toString(h));
+----
+
+
+=== 1.3.4. 크기
+
+* 배열은 크기는 생성 후 변경 불가
+** 이론상은 정수의 최대 크기만큼 생성 가능
+* 크기 변경을 위해서는 새로운 배열 생성 후 기존 데이터 복사
+* 배열 크기는 배열 객체의 length 필드를 통해 확인 가능
+* 동일한 타입의 데이터를 0개 이상 가짐
+* 배열의 크기는 배열 객체가 할당된 경우, length 필드의 직접적인 접근을 통해 확인 가능
++
+[source,java]
+----
+int[] a = new int[10];
+System.out.println("a.length = " + a.length);
+----
+* 자바의 배열은 기본적으로 1차원 배열만 존재. 다차원 배열은 배열의 요소를 참조한 후 재참조
++
+[source,java]
+----
+int[][] b = new int[2][3];
+
+System.out.println("b.length = " + b.length);
+----
+---
+
+=== 예제 1. 각각의 설명에 해당하는 배열을 선언하거나 정의해 보자.
+
+다음에 나열되어 있는 배열들 선언 또는 정의해 보자.
+
+* float 타입을 갖는 배열 x 선언
+* 선언된 배열 x에 크기 10의 배열 할당
+* main 함수의 입력 파라메터 args에 크기 10 배열 할당
+* boolean 타입 배열 isPrime을 선언하고, 크기 5 배열 할당
+* int 타입 배열 fib1을 선언하고, 0부터 시작하는 피보나치 수열 10개를 초기값으로 설정
+* int 타입 배열 fib2을 선언하고, new int[]와 함께 0부터 시작하는 피보나치 수열 10개를 초기값으로 설정
+* double 타입의 2차원 배열 a를 선언하고, 다음 값으로 초기화
+** { { 1.1, 2.2 }, { 3.3, 4.4 }, null, { 5.5, 6.6 }, null }
+* short 타입의 2차원 배열 b를 선언하고, 4x10 배열로 할당
+* Object 타입 배열 objects를 선언하고, 앞에서 생성한 x, args, isPrime, fib, b, a로 초기화
+* Integer 타입 배열 ints를 선언하고, 요소가 없는 배열로 초기화
+* 각 배열 출력
+* 배열 objects가 Object[] 타입인지 확인
+* 배열 objects의 0번째 요소가 Object 타입인지 확인
+* 배열 objects의 0번째 요소가 float[] 타입인지 확인
+* 배열 b의 0번째 요소가  short[] 타입인지 확인
+* 배열 ints가 Object 타입인지 확인
+* 배열 ints가 Object[] 타입인지 확인
+
+
+**수행 결과**
+
+[source,console]
+----
+x = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+args = [null, null, null, null, null, null, null, null, null, null]
+isPrime = [false, false, false, false, false]
+fib1 = [0, 1, 1, 2, 3, 5, 8, 13]
+fib2 = [0, 1, 1, 2, 3, 5, 8, 13]
+a = [[D@707f7052, [D@11028347, null, [D@14899482, null]
+b = [[S@21588809, [S@2aae9190, [S@2f333739, [S@77468bd9]
+objects = [[F@12bb4df8, [Ljava.lang.String;@4cc77c2e, [Z@7a7b0070, [I@39a054a5, [I@71bc1ae4, [[S@6ed3ef1, [[D@2437c6dc]
+objects instanceof Object[] = true
+objects[0] instanceof Object = true
+objects[0] instanceof float[] = false
+b[0] instanceof short[] = true
+ints instanceof Object = true
+ints instanceof Object[] = true
+----
+
+**참고**
+
+* 배열을 문자로 변환하기 위해서는 Arrays.toString() 메서드 사용
+* 객체의 타입을 확인하기 위해서는 instanceof 연산자 사용
+
+**확인**
+
+* link:{sourcedir}/Exam01.java[Source Code]
+
+**생각해 보기**
+
+* 선언 후 바로 사용이 가능한가?
+* C와 같은 언어는 다차원 배열 생성시 각 차원의 크기가 동일하다(포인터 이용 제외).
+** Java에서는? 다르다면 이유는?
+** b의 0번째 요소는 무슨 타입인가? 자바의 배열 구조에 대해 생각해 보자.
+
+== 1.4. 요소 접근
+
+=== 1.4.1. 참조
+
+* 인덱스를 이용해 특정 요소를 참조하거나 변경 가능
+** 정수 타입(int로 변환이 가능한 타입)의 인덱스를 이용해 참조 가능
+* 배열의 크기 또는 인덱스 값에 상관없이 일정한 시간
+* 배열의 크기를 벗어난 경우
+** 예외 처리 발생 (ArrayIndexOutOfBoundsException)
+** RuntimeException으로써, 실행 중에 발생 가능
+
+=== 1.4.2. 변경
+
+* 배열의 요소가
+** primitive 데이터 타입이면 값 변경
+** reference 데이터 타입이면 객체 변경
+
+---
+
+=== 예제 2. 다음에서 요구하는 배열을 생성하고, 출력해 보자.
+
+다음에 나열되어 있는 배열들 선언 또는 정의해 보자.
+
+* 배열 a
+** 1에서 9까지의 정수를 가짐
+* 배열 b
+** boolean 타입의 배열
+** 배열 a의 각 요소가 홀수 있지 결과 저장
+* 배열 c
+** 배열 a의 각 요소를 반지름으로 갖는 원들의 면적(Math.PI 이용)
+* 배열 d
+** 구구단을 저장하는 2차원 배열
+* 배열 a,b,c,d 출력
+** 출력 형식은 아래와 같다
++
+[source,java]
+----
+System.out.println("a[] = " + Arrays.toString(a));
+----
+
+**수행 결과**
+
+결과는 다음과 같이 출력될 수 있다. (일부 정보는 시스템 또는 실행시마다 달라짐)
+
+[source,console]
+----
+a[] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+b[] = [true, false, true, false, true, false, true, false, true]
+c[] = [3.141592653589793, 12.566370614359172, 28.274333882308138, 50.26548245743669, 78.53981633974483, 113.09733552923255, 153.93804002589985, 201.06192982974676, 254.46900494077323]
+d[][] = [
+[1, 2, 3, 4, 5, 6, 7, 8, 9],
+[2, 4, 6, 8, 10, 12, 14, 16, 18],
+[3, 6, 9, 12, 15, 18, 21, 24, 27],
+[4, 8, 12, 16, 20, 24, 28, 32, 36],
+[5, 10, 15, 20, 25, 30, 35, 40, 45],
+[6, 12, 18, 24, 30, 36, 42, 48, 54],
+[7, 14, 21, 28, 35, 42, 49, 56, 63],
+[8, 16, 24, 32, 40, 48, 56, 64, 72],
+[9, 18, 27, 36, 45, 54, 63, 72, 81]
+]
+----
+
+**참고**
+
+* 배열의 출력은 Arrays.toString() 메서드 이용
+* 다차원 배열은 Arrays.toString()으로 원하는 결과를 얻을 수 없음
+
+=== 예제 3. 예제 2를 JUnit 5를 이용해 확인해 보자.
+
+* log4j2 또는 slf4j를 이용해 로그 추가
+
+**수행 결과**
+
+image::arrays-exam03.png[]
+
+=== 1.4.3. 검색
+
+==== 1.4.3.1. 순차 검색 알고리즘(The Sequential Search Algorithm)
+
+* _선형 검색_
+** 각 요소를 처음부터 순차적으로 검사하여 키 요소를 찾거나 배열의 끝에 도달할 때까지 계속 검색
+* 가장 간단한 검색 알고리즘
+* 가장 효율성이 낮음
+
+**알고리즘**
+
+* 사후 조건
+** stem:[s_{i} = x]인 인덱스 i가 반환되거나 -1이 반환
+* 과정
+. i가 0부터 n - 1까지 반복하면서 단계 2-3을 반복
+. (불변: 부분 시퀀스(sequence) stem:[\{s_{0} \cdots s_{i-1}\}]에 있는 요소는 모두 x와 같지 않음)
+. stem:[s_{i} = x]인 경우, i 반환
+. 끝까지 찾지 못한 경우, -1 반환
+
+
+==== 예제 4. 순차 검색을 확인해 보자.
+
+[source,java]
+----
+include::{sourcedir}/Exam04.java[]
+----
+
+결과 출력은 아래와 같다.
+
+[source,console]
+----
+[22, 33, 44, 55, 66, 77, 88, 99]
+search(a, 44): 2
+search(a, 50): -1
+search(a, 77): 5
+search(a, 100): -1
+----
+
+. 검색은 잘 동작하는가?
+. 찾고자 하는 데이터가 없으면, 배열의 끝까지 검색은 하는가?
+. 데이터를 정수에서 문자열로 변경해서도 동일하게 동작하는가?
+.. 문제가 있다면 어떠한 문제가 있는가?
+. 정수나 문자열이 아닌 새로운 클래스를 정의하여도 동일하게 동작하는가?
+
+==== 1.4.3.2. 이진 검색 알고리즘(The Binary Search Algorithm)
+
+* 정렬된 시퀀스를 검색하는 표준 알고리즘
+* 순차 검색보다 훨씬 효율적이지만 *요소가 정렬되어 있어야 함*
+* 시퀀스를 반으로 나누고 검색하는 요소가 포함할 것으로 예상되는 절반으로 검색 범위 제한
+
+사전에서 단어를 찾을 때 이진 검색을 사용할 수 있습니다.
+
+**알고리즘**
+
+* 전제 조건
+** stem:[s = \{s_{0}, s_{1}, \cdots, s_{n-1}\}]은 x와 동일한 타입의 n개의 값으로 구성된 정렬된 배열
+* 사후 조건
+** 인덱스 i가 반환되어야 할 stem:[s_{i} = x]가 있는 경우, 또는 -1 반환
+* 과정
+1.	ss를 배열 s의 부분 배열로 정의하고, 초기에 ss를 s와 동일하게 설정
+2.	부분 배열 ss가 비어 있다면, -1 반환
+3.	(불변식: x가 배열 s에 있다면, 그것은 부분 배열 ss에 있어야 함)
+4.	stem:[s_{i}]를 ss의 중간 요소로 설정
+5.	stem:[s_{i}]가 x와 같다면, 해당하는 인덱스 i 반환
+6.	stem:[s_{i}]가 x보다 작다면, stem:[s_{i}] 위에 있는 부분 배열에 대해 단계 2-7 반복
+7.	stem:[s_{i}]가 x보다 크다면, stem:[s_{i}] 아래에 있는 부분 배열에 대해 단계 2-7 반복
+
+
+==== 예제 5. 이진 검색을 확인해 보자.
+
+[source,java]
+----
+include::{sourcedir}/Exam05.java[]
+----
+
+* 44를 검색하기 위해 어떠한 과정이 수행되는가?
+* 검색에서 가장 오래 걸린 경우 몇 번을 반복하는가?
+* 검색하고자 하는 요소가 존재하지 않는다면 몇 번을 반복하는가?
+* 배열의 길이가 2배 늘어난다면 검색의 횟수는 어떻게 되는가?
+** stem:[O(\lg n)]
+
+== 1.5. 반복 처리
+
+* 배열을 개별 요소를 인덱스로 접근해 사용하기도 하지만, 요소들을 순차적으로 처리할 경우가 있음
+* 일반적으로 반복문(for, while, foreach 등)을 많이 사용
+* Stream을 이용해 처리 가능
+
+=== 예제 6. 배열 요소에 대한 순차처리를 반복문을 통해 확인해 보자.
+
+아래의 순서에 따라 기능을 확인해 보자.
+
+* 테스트를 위한 정수 배열 생성
++
+[source,java]
+----
+include::{sourcedir}/Exam06.java[lines=5..5,indent=0]
+----
+* 인덱스와 반복문을 이용한 처리
++
+[source,java]
+----
+include::{sourcedir}/Exam06.java[lines=7..9,indent=0]
+----
+* 자바에서 지원하는 foreach 문을 이용해 처리
++
+[source,java]
+----
+include::{sourcedir}/Exam06.java[lines=11..13,indent=0]
+----
+
+**실행 결과**
+
+[source,console]
+----
+1
+2
+3
+4
+5
+1
+2
+3
+4
+5
+----
+
+**생각해 볼 것**
+
+* for문과 foreach문은 동일하게 배열의 처음부터 끝까지 반복처리한다. 무엇이 다른가?
+* 배열의 일부만 출력하고 싶다면?
+** foreach문으로 일부만 처리할 수 없나?
+
+
+== 1.6. 복제
+
+* 배열을 동일한 크기와 요소를 갖도록 다른 배열을 만듦
+* Object.clone() 메서드 사용
+* Arrays.copyOf() 메서드 사용
+* Arrays.copyOfRange() 메서드 사용
+
+=== 1.6.1. Object.clone()을 이용한 배열 복제
+
+* 배열은 객체이기 때문에 Object.clone()을 이용해 복제 가능
+
+==== 예제 7. Object.clone()을 이용해 배열을 복제해 보자.
+
+[source,java]
+----
+include::{sourcedir}/Exam07.java[]
+----
+
+결과는 아래와 같다.
+
+[source,console]
+----
+a : {22, 44, 66, 88}
+b : {22, 44, 66, 88}
+c : {AB, CD, EF}
+d : {AB, CD, EF}
+c : {AB, XYZ, EF}
+d : {AB, CD, EF}
+e : {AB, CD, EF}
+f : {AB, CD, EF}
+e : {AB, CDCD, EF}
+f : {AB, CDCD, EF}
+----
+
+. 정수 타입 배열 b는 배열 a와 동일하게 복제되었는가?
++
+[source,code]
+----
+include::{sourcedir}/Exam07.java[lines=5..8,indent=0]
+----
+. 문자열 타입 배열 b는 배열 c와 동일하게 복제되었는가?
++
+[source,code]
+----
+include::{sourcedir}/Exam07.java[lines=9..12, indent=0]
+----
+. c[1]을 변경하였는데, 복제된 배열 d에는 어떠한 영향이 있는가?
++
+[source,code]
+----
+include::{sourcedir}/Exam07.java[lines=13..15, indent=0]
+----
+. StringBuilder 타입으로 배열 e와 f를 생성하고, e[1]을 변경하였다. 복제된 배열 f에는 어떠한 영향이 있는가?
++
+[source,code]
+----
+include::{sourcedir}/Exam07.java[lines=17..23, indent=0]
+----
+
+=== 1.6.2. Arrays.copyOf()를 이용한 배열 복제
+
+* 인수로 주어진 배열에서 주어진 길이만큼을 복제하여 새로운 배열 생성 후 반환
+* 소스 배열보다 요청한 크기가 클 경우, 해당 타입의 기본값으로 설정(기본 생성자 아님)
+
+=== 1.6.3. Arrays.copyOfRange()를 이용한 배열 복제
+
+* copyOf()와 비슷한 기능을 수행하지만, 소스 배열에서 시작과 끝 지정 가능
+* 복제 시 클래스 정보를 제공할 경우, 다른 타입의 배열로 변환 가능
+** 다른 타입은 소스 데이터가 변환할 수 있는 때에만 적용 가능
+
+==== 예제 8. Arrays.copyOfRange()를 이용해 배열을 복제해 보자.
+
+[source,java]
+----
+include::{sourcedir}/Exam08.java[]
+----
+
+==== 예제 9. 다음 조건을 만족하도록 배열을 복제하라.
+
+* 정수 10개 배열 생성
+* 배열의 3번째부터 8번째까지의 요소를 Arrays.copyOfRange()를 이용해 Number 배열로 복제
+
+[source,java]
+----
+include::{sourcedir}/Exam09.java[lines=1..9]
+...
+include::{sourcedir}/Exam09.java[lines=12..15]
+----
+
+**수행 결과**
+
+[source,console]
+----
+[1, 1, 2, 3, 5, 8, 13]
+[5, 8]
+----
+
+==== 예제 10. 예제 9를 JUnit5를 이용한 테스트 코드로 확인하라.
+
+**테스트 코드**
+
+[source,java]
+----
+include::{testdir}/TestExam10.java[lines=9..13]
+...
+include::{testdir}/TestExam10.java[lines=18..19]
+----
+
+**수행 결과**
+
+image::arrays-exam10.png[align=center]
+
+
+==== 예제 11. 다음 조건을 만족하도록 배열을 복제하라.
+
+* 정수를 가질 수 있는 Box 클래스 정의
+** 저장된 정수를 가져오거나 변경 가능
+** up() 호출 시, 저장된 정수를 1 증가시킴
+** toString() 호출 시, 정수 출력
+* 정수 1~10까지 10개를 순서대로 각각의 Box에 담아 배열 생성
+* Box 배열의 3번째부터 5번째까지의 요소를 copyOfRange()를 이용해 복제
+* 복제된 배열의 요소를 up() 시킴
+* 원 소스 배열 출력 후 확인
+
+**수행 결과**
+
+[source,console]
+----
+[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+[4, 5, 6]
+[5, 6, 7]
+----
+
+==== 예제 12. 예제 11의 결과를 JUnit5를 이용한 테스트 코드로 확인하라.
+
+**테스트 코드**
+
+[source,java]
+----
+include::{testdir}/TestExam12.java[lines=9..12]
+...
+include::{testdir}/TestExam12.java[lines=20..22]
+----
+
+**수행 결과**
+
+image::arrays-exam12.png[align=center]
+
+
+== 1.7. java.util.Arrays 클래스
+
+* 배열을 처리하기 위한 특별한 유틸리티 클래스
+* Arrays 클래스에서 지원하는 sort(), binarySearch(), fill(), equals() 활용
+
+=== 예제 13. Arrays 클래스에서 지원하는 sort, binarySearch, fill, equals등을 활용해보자.
+
+아래의 과정을 따라서 실행해 보자.
+
+* 정수 배열 a를 초기값 {44, 77, 55, 22, 99, 88, 33, 66}으로 생성 후 출력
++
+[source,java]
+----
+include::{sourcedir}/Exam13.java[lines=7..8,indent=0]
+----
+* link:https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#sort-int:A-[Arrays.sort()] 메서스를 이용해 정렬 후 출력
++
+[source,java]
+----
+include::{sourcedir}/Exam13.java[lines=9..10,indent=0]
+----
+* link:https://docs.oracle.com/javase/8/docs/api/java/util/Arrays.html#binarySearch-int:A-int-[Arrays.binarySearch()] 메서드를 이용해 값 검색 후 인덱스 출력
++
+[source,java]
+----
+include::{sourcedir}/Exam13.java[lines=11..12,indent=0]
+----
+* 검색된 인덱스가 정확한지 배열을 통해 확인
++
+[source,java]
+----
+include::{sourcedir}/Exam13.java[lines=13..13,indent=0]
+----
+* 새로운 배열 b를 생성하고, Arrays.fill() 메서드를 이용해 요소들을 55로 설정
++
+[source,java]
+----
+include::{sourcedir}/Exam13.java[lines=16..19,indent=0]
+----
+* 배열 a와 배열 b를 Arrays.equals() 메서드를 이용해 비교
++
+[source,java]
+----
+include::{sourcedir}/Exam13.java[lines=20..20,indent=0]
+----
+
+**수행 결과**
+[source,console]
+----
+[44, 77, 55, 22, 99, 88, 33, 66]
+[22, 33, 44, 55, 66, 77, 88, 99]
+Arrays.binarySearch(a, 44): 2
+a[2]: 44
+Arrays.binarySearch(a, 45): -4
+[0, 0, 0, 0, 0, 0, 0, 0]
+[55, 55, 55, 55, 55, 55, 55, 55]
+Arrays.equals(a,b): false
+----
+
+. 정수 배열에 대해 sort, binarySearch, fill 등의 동작을 확인했나?
+. 정수를 String으로 변경하여 동일한 과정을 수행하고 정수 배열과의 차이를 확인해 보자.
+. int, String과 같이 기존에 정의되어 있던 타입 외에 별도의 클래스를 정의하여 동일한 과정을 수행 후 비교해 보자.
+
+
+
+== 1.8. 복습 문제
+
+1. 배열의 구성요소(component)와 요소(element)의 차이는 무엇인가요?
+2. 자바가 다차원 배열을 허용하지 않는다는 것은 무엇을 의미하나요?
+3. ArrayIndexOutOfBoundsException 예외는 무엇이고, 그 사용 방법은 C나 C++과 같은 다른 언어와 무엇이 다른가요?
+4. 배열 인덱스에 대해 유효한 타입은 무엇인가요?
+5. 다음 정의에 무엇이 잘못되었나요:
+   Arrays arrays = new Arrays();
+6. 객체 배열을 출력하는 가장 간단한 방법은 무엇인가요?
+7. 이진 검색이 순차 검색보다 훨씬 빠르다면, 후자가 언제 사용될까요?
+8. 배열에서 두 번 이상 발생하는 요소에 순차 검색이 적용된다면 어떻게 될까요?
+9. 배열에서 두 번 이상 발생하는 요소에 이진 검색이 적용된다면 어떻게 될까요?
+
+== 1.9. 문제
+
+. 배열의 fill() 메서드가 객체 배열을 어떻게 처리하는지 보기 위해 테스트 프로그램을 실행하세요.
++
+{sp}+
+. 배열 a[]의 최소 요소를 반환하는 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+int minimum(int[] a)
+----
+{sp}+
+. 배열 a[]의 모든 요소의 평균값을 반환하는 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+double mean(double[] a)
+----
+{sp}+
+. 배열에서 중복되는 제거한 배열을 생성하여 반환하는 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+int[] withoutDuplicates(int[] a)
+----
+{sp}+
+. 배열의 요소를 뒤집는 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+void reverse(int[] a)
+----
+{sp}+
+. 배열 a[]와 b[]의 모든 요소를 포함하는 배열을 생성해 반환하는 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+Object[] concatenate(Object[] a, Object[] b)
+----
+{sp}+
+. 배열의 요소를 무작위로 섞는 메스드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+void shuffle(Object[] a)
+----
+{sp}+
+. 주어진 문자열에서 대소문자 구분 없이 문자 빈도를 계산한 26개의 정수 배열을 반환하는 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+int[] tally(String string)
+----
+{sp}+
+. 배열의 각 요소를 곱하여 그 합을 반환하는 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+double innerProduct(double[] x, double[] y)
+----
+* stem:[innerProdut(x,y) = \sum\limits_{i=0}^{n} x \lbrack i \rbrack y \lbrack i \rbrack]
+{sp}+
+. 두 배열의 대수적 외적(algebraic outer product)을 계산하는 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+double[][] outerProduct(double[] x, double[] y)
+----
+* stem:[p\lbrack i \rbrack \lbrack j \rbrack = a \lbrack i \rbrack * b \lbrack j \rbrack]
+{sp}+
+
+. 두 배열의 행렬 곱하여 반환하는 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+double[][] product(double[][] a, double[][] b)
+----
+* stem:[p \lbrack i \rbrack \lbrack j \rbrack = \sum\limits_{k=0}^{n} a\lbrack i \rbrack \lbrack k \rbrack \times b \lbrack k \rbrack \lbrack j \rbrack]
+{sp}+
+. 배열의 전치 행렬을 생성하여 반환하는 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+double[][] transpose(double[][] a)
+----
+* stem:[ta \lbrack i \rbrack \lbrack j \lbrack = a \lbrack j \rbrack \lbrack i \rbrack]
+{sp}+
+. 주어진 크기의 파스칼 삼각형을 생성하는 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+int[][] pascal(int size)
+----
+* 파스칼 삼각형은 다음과 같습니다.
+  1. 숫자가 들어갈 칸을 첫 번째 줄에는 1개, 두 번째 줄에는 2개, 세 번째 줄에는 3개 이런 식으로 한 줄씩 내려가면 한 칸씩 늘어나게 정삼각형 모양으로 만든다.
+  2. 첫 번째 줄과 두 번째 줄의 3칸에는 1을 쓴다.
+  3. 세 번째 줄부터는 줄의 양쪽 끝 칸에는 1을 쓰고 나머지 칸에는 바로 윗줄에 위치한 칸 중 해당 칸과 인접해 있는 두 칸의 숫자를 더해서 그 값을 쓴다.
+* 첫 5줄의 출력은 다음과 같아야 합니다.
++
+[source,console]
+----
+[1]
+[1, 1]
+[1, 2, 1]
+[1, 3, 3, 1]
+[1, 4, 6, 4, 1]
+----
+{sp}+
+. 에라토스테네스의 체를 작성하고, 크기가 1,000인 체를 만들어 테스트하세요.
++
+[source,java]
+----
+boolean[] initializeSieve(int n);
+----
+* 에라토스테니스의 체는 i번째 요소가 소수일 때만 true인 boolean 요소의 배열입니다
++
+전제 조건: p는 n 비트 배열입니다. +
+사후 조건: p[i]는 i가 소수일 때만 true입니다.
++
+1. p[0]과 p[1]을 false로 초기화하고, 다른 모든 p[i]는 true로 초기화합니다.
+2. 3부터 n까지 각 i에 대해 2씩 증가하며 3단계를 반복합니다.
+3. i를 나누는 제곱근 이하의 소수가 있으면 p[i]를 false로 설정합니다.
+* 첫 5줄의 출력은 다음과 같아야 합니다.
++
+[source,console]
+----
+    2    3    5    7   11   13   17   19   23   29   31   37   41   43   47   53
+   59   61   67   71   73   79   83   89   97  101  103  107  109  113  127  131
+  137  139  149  151  157  163  167  173  179  181  191  193  197  199  211  223
+  227  229  233  239  241  251  257  263  269  271  277  281  283  293  307  311
+  313  317  331  337  347  349  353  359  367  373  379  383  389  397  401  409
+----
++
+{sp}+
+. java.util.Vector 객체를 이용해 에라토스테네스의 체를 작성하고, 크기가 1,000인 체를 만들어 테스트하세요.
++
+[source,java]
+----
+Vector<Boolean> initializeSieve(int n);
+----
+{sp}+
+. java.util.BitSet 객체를 이용해 에라토스테네스의 체를 작성하고, 크기가 1,000인 체를 만들어 테스트하세요.
++
+[source,java]
+----
+BitSet initializeSieve(int n);
+----
+{sp}+
+. 다음 메서드가 있는 Primes 클래스를 정의하고 테스트하세요:
++
+[source,java]
+----
+public class Primes {
+    private static final int SIZE = 1000;
+    private static int size = SIZE;
+    private static BitSet sieve = new BitSet(size);
+    private static int last = 1;
+
+    // 다음과 같은 정적 초기화 블록을 포함하여 에라토스테네스의 체를 구현합니다.
+    static {
+        for (int i = 2; i < SIZE; i++) {
+            sieve.set(i);
+        }
+        for (int n = 2; 2*n < SIZE; n++) {
+            if (sieve.get(n)) {
+                for (int m=n; m*n<SIZE; m++) {
+                    sieve.clear(m*n);
+                }
+            }
+        }
+    }
+
+    // last 설정
+    public static void setLast(int last) {
+        //...
+    }
+
+    // 비트 셋 크기 설정
+    public static void sizeSize(int size) {
+        //...
+    }
+
+    // 비트 셋 크기를 1000으로 설정
+    public static void sizeSize() {
+        //...
+    }
+
+    // n이 소수이면 true
+    public static boolean isPrime(int n) {
+        //...
+    }
+
+    // last 이후의 다음 소수
+    public static int next() {
+        // ...
+    }
+
+    // 체를 출력
+    public static void printPrimes() {
+        //...
+    }
+}
+----
+* java.util.BitSet를 이용해 구현한 에라토스테네스의 체를 사용하세요.
+{sp}+
+. 다음 메서드를 Primes 클래스에 추가하고 테스트하세요.
++
+[source,java]
+----
+public static String factor(int n)
+// 전제 조건: n > 1
+// n의 소인수 분해를 반환합니다;
+// 예: factor(4840)은 "2*2*2*5*11*11"을 반환합니다.
+----
+{sp}+
+. 골드바흐의 추측을 확인하기 위한 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+int [][] goldbachNumber(int n);
+----
+* Christian Goldbach(1690–1764)는 1742년에 2보다 큰 모든 짝수는 두 소수의 합으로 표현된다고 추측했습니다.
+* 앞에서 작성한 Primes 클래스를 사용합니다.
+* 첫 10줄의 출력은 다음과 같아야 합니다.
++
+[source,console]
+----
+4 = 2+2
+6 = 3+3
+8 = 3+5
+10 = 3+7 = 5+5
+12 = 5+7
+14 = 3+11 = 7+7
+16 = 3+13 = 5+11
+18 = 5+13 = 7+11
+20 = 3+17 = 7+13
+22 = 3+19 = 5+17 = 11+11
+----
+{sp}+
+. 모든 페르마 소스(Fermat Prime)를 찾기 위한 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+int[] fermatPrime(int n);
+----
+* Pierre de Fermat(1601–1665)는 어떤 정수 p에 대해 stem:[n = 2^{2^{p}}+1] 형태의 소수가 무한히 많다고 추측했습니다. 이러한 수를 Fermat 소수라고 합니다. 예를 들어, 5는 소수이고 stem:[2^{2^{1}} + 1] 형태이므로 Fermat 소수입니다.
+* 앞에서 작성한 Primes 클래스를 사용합니다.
+* 첫 5줄의 출력은 다음과 같아야 합니다.
++
+[source,console]
+----
+2^0 + 1 = 3
+2^1 + 1 = 5
+2^2 + 1 = 17
+2^3 + 1 = 257
+2^4 + 1 = 65537
+----
+{sp}+
+. Babbage prime을 찾기 위한 메서드를 작성하고, 테스트하세요.
++
+[source,java]
+----
+int[] babbagePrime(int n);
+----
+* 찰스 배비지(Charles Babbage 1792-1871)는 1823년에 정부 보조금을 처음으로 받아내어 차분 기관을 만들기 위해 £1000를 받았습니다. 그의 보조금 제안서에서, Babbage는 그의 컴퓨터가 stem:[x^2 + x + 41] 공식을 표로 작성할 것이라고 예를 들었습니다. 이 함수는 많은 소수를 생성하기 때문에 수학자들에게 흥미로웠습니다.
+* stem:[n = x^2 + x + 41] 형태의 소수를 Babbage 소수라고 할 수 있습니다.
+* 앞에서 작성한 Primes 클래스를 사용합니다.
+* 첫 5줄의 출력은 다음과 같아야 합니다.
++
+[source,console]
+----
+0 41 is prime
+1 43 is prime
+2 47 is prime
+3 53 is prime
+4 61 is prime
+----
+{sp}+
+. 쌍둥이 소수를 찾아 출력하는 프로그램을 작성하세요.
++
+[source,java]
+----
+int[] twinPrime(int max);
+----
+* 두 연속된 홀수가 모두 소수일 때, 이를 쌍둥이 소수라고 하며, 무한히 많을 것이다.
+* 앞에서 작성한 Primes 클래스를 사용합니다.
+* 결과는 반환된 배열 중 앞에서부터 두 개씩 쌍으로 구성됩니다.
+* 첫 5줄의 출력은 다음과 같아야 합니다.
++
+[source,console]
+----
+3 5
+5 7
+11 13
+17 19
+29 31
+----
+{sp}+
+. 각 연속된 제곱수 쌍 사이에 적어도 하나의 소수가 있다는 가설을 테스트하세요.
++
+[source,java]
+----
+int findPrime(int min, int max);
+----
+* 제곱수는 1, 4, 9, 16, 25, ... 입니다.
+* 앞에서 작성한 Primes 클래스를 사용하세요.
+* 첫 5줄의 출력은 다음과 같아야 합니다.
++
+[source,console]
+----
+1 < 2 < 4
+4 < 5 < 9
+9 < 11 < 16
+16 < 17 < 25
+25 < 29 < 36
+----
+{sp}+
+. 메르센 소수(Mersenne prime)를 찾아 출력하는 프로그램을 작성하세요.
++
+[source,java]
+----
+boolean isMersennePrime(int p);
+----
+* Minimite 수도사 Marin Mersenne(1588–1648)는 p가 소수일 때 stem:[n = 2^p - 1] 형태의 수를 연구했습니다. 그는 대부분의 n이 소수일 것이라고 믿었습니다. 이제 이 수는 Mersenne 소수라고 합니다.
+* 앞에서 작성한 Primes 클래스를 사용하세요.
+* 첫 5줄의 출력은 다음과 같아야 합니다.
++
+[source,console]
+----
+2 2^2-1 = 3 is prime
+3 2^3-1 = 7 is prime
+5 2^5-1 = 31 is prime
+7 2^7-1 = 127 is prime
+11 2^11-1 = 2047 is not prime
+----
+{sp}+
+. 2부터 시작되는 소수 n개를 찾고, 이중 회문을 찾아 출력하는 프로그램을 작성하세요.
+* 숫자가 뒤집혀도 동일할 때, 그 숫자를 회문이라고 합니다. +
+예를 들어, 3456543은 회문입니다.
+* 앞에서 구현한 Primes 클래스를 이용합니다.
+
+---
+
+ifndef::github-env[]
+link:../index.adoc[목록]
+endif::[]
+
+ifdef::github-env[]
+link:../README.md[목록]
+endif::[]

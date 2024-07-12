@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="error" name="nhnacademy">
+    <Appenders>
+        <Console name="stdout" target="SYSTEM_OUT">
+            <PatternLayout pattern="%c %d{yyyy-MM-dd HH:mm:ss} %p %m%n"/>
+        </Console>
+    </Appenders>
+
+
+    <Loggers>
+        <Logger name="com.nhnacademy.modules" level="debug"  additivity="false">
+            <AppenderRef ref="stdout"/>
+        </Logger>
+        <Root level="trace">
+            <AppenderRef ref="stdout"/>
+        </Root>
+    </Loggers>
+</Configuration>

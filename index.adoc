@@ -1,0 +1,12 @@
+= Data Structures and Algorithms
+
+. link:./01.arrays.adoc[Arrays]
+. link:./02.linked_data_structures.adoc[Linked Data Structures]
+. link:./03.list.adoc[List]
+. link:./04.stacks.adoc[Stacks]
+. link:./05.queues.adoc[Queues]
+. link:./06.hash_tables.adoc[Hash Tables]
+. link:./07.recursion.adoc[Recursion]
+. link:./08.trees.adoc[Trees]
+. link:./09.binary_tree.adoc[Binary Trees]
+. link:./10.sorting.adoc[Sorting]

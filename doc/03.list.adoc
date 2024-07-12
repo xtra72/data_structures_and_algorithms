@@ -1,0 +1,231 @@
+:stem: latexmath
+:sourcedir: ../src/data_structures_and_algorithms/src/main/java/com/nhnacademy/list
+
+= 3.List(리스트)
+
+* 순차적으로 접근 가능한 요소들의 모음
+* 순차 접근 또는 연결 접근
+** 철로 위의 기차 칸과 같아 첫 번째 칸에서 네 번째 칸으로 가려면 두 번째 칸과 세 번째 칸을 순서대로 지나야 함
+* 삽입 또는 삭제가 이루어지는 위치에 인접한 두 칸에만 영향을 미치며, 다른 칸들은 영향을 받지 않음
+
+== 3.1. Java List Interface
+
+* Java List interface
++
+[source,java]
+----
+----
+* Queue, Deque, Set interface 모두가 List interface 확장
+** 모든 List, Queue, Deque, Set 클래스는 List interface 구현
+* Java에서는 List interface의 연결된 구현과 인덱스된 구현 모두 제공
+** LinkedList 클래스는 순차 접근 사용
+** ArrayList 클래스는 직접 접근 제공
+
+=== 예제 1. 문자열을 요소로 갖는 ArrayList에 생성하고, 기본 기능을 확인해 보자.
+
+**요구 사항**
+
+* ArrayList를 이용해 문자열 리스트인 list 생성
+* 4개의 문자열, GB, DE, FR, ES는 넣고 출력
+* 4번째 자리에 DE를 추가하고 출력
+* 4번째 요소를 가져와 출력
+* DE의 인덱스 출력
+* IE의 인덱스 출력
+* list의 두번째부터 5번째까지의 부분 리스트 생성 후 출력
+* DE 삭제 후 list 출력
+* 출력은 다음과 같다
++
+[source,console]
+----
+[GB, DE, FR, ES]
+[GB, DE, FR, DE, ES]
+list.get(3): DE
+list.indexOf("DE"): 1
+list.indexOf("IE"): -1
+list.subList(1, 5): [DE, FR, DE, ES]
+[GB, FR, DE, ES]
+----
+
+**소스 코드**
+
+* link:{sourcedir}/Exam01.java[Exam01.java]
+
+
+== 3.2. 특정 범위만을 보여주는 sublist()
+
+* 리스트의 특정 범위만을 요소로 갖는 리스트 반환
++
+[source,java]
+----
+list.sublist(1, 5).get(2);
+----
+** list 의 2번째에서 4번째 요소만 보이는 리스트 반환
+** 반환된 리스트의 3번째 요소를 요청하였으므로, 처음 리스트의 4번째 요소 반환
+* 얻고자하는 요소의 시작 인덱스와 마지막 인덱스의 다음 인덱스 전달
+* 반환된 결과는 새로운 리스트이지만, 요소들은 공유
+
+=== 예제 2. 범위 뷰 연산으로서의 sublist() 메소드 기능을 확인해 보자.
+
+**요구 사항**
+
+* "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"를 요소로 갖는 리스트 생성 후 출력
+** Collections.addAll() 메서드를 이용하면, 여러개의 요소들을 한꺼번에 넣을 수 있음
+** 리스트의 toString() 메서드는 요소들을 출력하도록 재정의되어 있음
+* sublist()를 이용해 4번째에서 8번째 요소만 출력
+* sublist() 결과에서 3번째 요소 출력
+* sublist() 결과에서 3번째 요소를 "B"로 변경
+* 원 리스트 출력
+* 값 "B"가 어디에 있는지 검색
+* indexOf() 메서드는 해당 값이 몇번째에 있는지 반환
+* 원 리스트 출력
+* Collections.reverse() 메서드를 이용해 sublist() 변환
+* 원 리스트 출력
+* Collections.rotate() 메서드를 이용해 sublist()를 우측으로 2번 회전
+* 원 리스트 출력
+* Collections.fill() 메서드를 이용해 sublist()를 "X"로 채우기
+* 원 리스트 출력
+* sublist()를 clear() 메서드로 요소들 지우기
+* 원 리스트 출력
+
+**수행 결과**
+
+[source,console]
+----
+[A, B, C, D, E, F, G, H, I, J]
+list.subList(3,8): [D, E, F, G, H]
+list.subList(3,8).get(2): F
+list.subList(3,8).set(2,"B"):
+[A, B, C, D, E, B, G, H, I, J]
+list.indexOf("B"): 1
+list.subList(3,8).indexOf("B"): 2
+[A, B, C, D, E, B, G, H, I, J]
+Collections.reverse(list.subList(3,8)):
+[A, B, C, H, G, B, E, D, I, J]
+Collections.rotate(list.subList(3,8), 2):
+[A, B, C, E, D, H, G, B, I, J]
+Collections.fill(list.subList(3,8), "X"):
+[A, B, C, X, X, X, X, X, I, J]
+[A, B, C, I, J]
+----
+
+**소스 코드**
+
+* link:{sourcedir}/Exam02.java[Exam02.java]
+
+== 3.3. List Iterator(리스트 반복자)
+
+* Iterator interface를 확장하여 ListIterator interface 정의
+* List iterator의 양방향 특성을 반영한 여섯 개의 추가 메소드 지정
+* List iterator를 얻는 표준 방법은 리스트의 listIterator() 메소드 호출
+
+=== 예제 3. List interator를 얻고, 이를 통한 리스트 제어를 확인해보자.
+
+**요구 사항**
+
+* "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"를 요소로 갖는 리스트 생성 후 출력
+* listIterator() 메서드를 이용해 ListIterator를 얻어내 it로 참조
+* nextIndex() 메서드를 이용해 it가 지시하고 있는 다음 인덱스 확인
+* next() 메서드를 이용해 it를 다음 요소로 이동하면서 it가 지시하고 있던 다음 인덱스 값 반환 확인
+* previousIndex() 메서드를 이용해 it가 이전에 지시했던 인덱스 확인
+
+
+**수행 결과**
+
+[source,console]
+----
+[A, B, C, D, E, F, G, H]
+it.nextIndex(): 0
+it.next(): A
+it.previousIndex(): 0
+it.nextIndex(): 1
+it.next(): B
+it.next(): C
+it.previous(): C
+it.previousIndex(): 1
+it.nextIndex(): 2
+it.previous(): B
+it.next(): B
+it.next(): C
+it.next(): D
+it.add("X"):
+[A, B, C, D, X, E, F, G, H]
+it.next(): E
+it.set("Y"):
+[A, B, C, D, X, Y, F, G, H]
+it.next(): F
+it.remove():
+it.next(): G
+[A, B, C, D, X, Y, G, H]
+----
+
+**소스 코드**
+
+link:{sourcedir}/Exam03.java[Exam03.java]
+
+=== 예제 4. 같은 List 객체에서 여러 ListIterator 객체 사용이 가능한지 또는 문제가 없는지 확인해 보자.
+
+**요구 사항**
+
+* "A", "B", "C", "D"를 요소로 갖는 리스트 생성 후 출력
+* listIterator() 메서드를 이용해 ListIterator를 얻어내 it1로 참조
+* next() 메서드를 이용해 it1가 지시하고 있는 다음 값 확인 및 이동
+* next() 메서드를 이용해 it1가 지시하고 있는 다음 값 확인 및 이동
+* next() 메서드를 이용해 it1가 지시하고 있는 다음 값 확인 및 이동
+* add() 메서드를 이용해 "X" 추가 후 전체 리스트 출력
+* listIterator() 메서드를 이용해 ListIterator를 얻어내 it2로 참조
+* next() 메서드를 이용해 it2가 지시하고 있는 다음 값 확인 및 이동
+* next() 메서드를 이용해 it2가 지시하고 있는 다음 값 확인 및 이동
+* add() 메서드를 이용해 "Y" 추가 후 전체 리스트 출력
+* listIterator() 메서드를 이용해 ListIterator를 얻어내 it3로 참조
+* next() 메서드를 이용해 it3가 지시하고 있는 다음 값 확인 및 이동
+* next() 메서드를 이용해 it3가 지시하고 있는 다음 값 확인 및 이동
+* next() 메서드를 이용해 it3가 지시하고 있는 다음 값 확인 및 이동
+* next() 메서드를 이용해 it3가 지시하고 있는 다음 값 확인 및 이동
+* previous() 메서드를 이용해 it1가 지시하고 있는 이전 값 확인 및 이동
+* previous() 메서드를 이용해 it1가 지시하고 있는 이전 값 확인 및 이동
+* previous() 메서드를 이용해 it1가 지시하고 있는 이전 값 확인 및 이동
+
+**수행 결과**
+
+[source,java]
+----
+[A, B, C, D]
+it1.next(): A
+it1.next(): B
+it1.next(): C
+it1.add("X"):
+[A, B, C, X, D]
+it2.next(): A
+it2.next(): B
+it2.set("Y"):
+[A, Y, C, X, D]
+it3.next(): A
+it3.next(): Y
+it3.next(): C
+it3.next(): X
+it1.previous(): X
+it1.previous(): C
+it1.previous(): Y
+----
+
+**소스 코드**
+
+* link:{sourcedir}/Exam04.java[Exam04.java]
+
+== 3.4. 기타 리스트 유형
+
+=== 3.4.1. Ring Class
+
+* 리스트의 끝이 처음과 연결되어 있는 Ring 형태
+
+image::./images/figure7_2.svg[align=center]
+
+==== 예제 5. Ring class를 구현하고, iterator의 동작을 확인해 보자.
+
+* Ring class에서 iterator() 메서드를 이용해 얻은 Iterator 객체를 생성하고, 다음 그림과 같은 구성을 갖는다.
++
+image::./images/figure7_3.svg[RingIterator 클래스의 last 및 preLast 참조, 가운데 정렬]
+* Iterator 객체는 interface에 정의되어 있는 기능을 수행하며, remove() 메서드 호출시 다음 그림과 같은 동작을 수행한다.
++
+image::./images/figure7_4.svg[After a call to it.remove]
+** remove() 메서드를 호출하여 "C"를 제거한 후 next() 메서드를 호출하면, preLast를 이용해 다음 요소를 찾을 수 있음
